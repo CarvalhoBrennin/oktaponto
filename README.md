@@ -29,8 +29,17 @@ O bootstrap exige Flutter 3.47.2 por padrão, configura Android API 24/36 + Java
 
 ## Verificação
 
+Checks que não exigem Flutter e, quando o SDK estiver presente, a suíte móvel:
+
 ```bash
 ./scripts/verify_all.sh
+```
+
+Gate estrito de release (exige lockfile, goldens e device/emulador):
+
+```bash
+cd app
+HORAFOLIO_DEVICE_ID=<device-id> ./tool/release_gate.sh
 ```
 
 Ou manualmente:
@@ -56,6 +65,10 @@ Goldens de UI (primeira renderização/atualização dos baselines):
 cd app
 ./tool/update_goldens.sh
 ```
+
+Também existe o workflow manual `Render Flutter goldens`, que produz os PNGs em Flutter 3.47.2 como artifact para revisão/commit. Os testes golden falham se os baselines não estiverem versionados; não há skip silencioso.
+
+> Este pacote foi endurecido num host sem Flutter/Dart. Por isso `pubspec.lock` e os PNGs golden não foram fabricados. Gere-os com Flutter 3.47.2 e versione-os antes de uma release; `tool/release_gate.sh` bloqueia a release enquanto isso não acontecer.
 
 ## Build
 
