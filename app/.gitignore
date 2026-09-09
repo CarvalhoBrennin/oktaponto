@@ -1,0 +1,8 @@
+.dart_tool/
+.packages
+.pub/
+build/
+coverage/
+lib/core/database/app_database.g.dart
+android/
+ios/

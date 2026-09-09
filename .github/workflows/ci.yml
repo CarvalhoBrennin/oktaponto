@@ -1,0 +1,114 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main, master]
+
+permissions:
+  contents: read
+
+jobs:
+  flutter-quality:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.47.2"
+          channel: stable
+          cache: true
+      - run: flutter doctor -v
+      - run: ./tool/bootstrap_platforms.sh
+      - run: flutter pub get
+      - run: dart run build_runner build --delete-conflicting-outputs
+      - run: dart format --output=none --set-exit-if-changed .
+      - run: flutter analyze
+      - run: flutter test --coverage
+      - run: flutter test integration_test
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: flutter-coverage
+          path: app/coverage
+          if-no-files-found: ignore
+          retention-days: 14
+
+  legacy-oracle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: legacy/python_reference/requirements.txt
+      - run: python -m pip install -r legacy/python_reference/requirements.txt
+      - run: python -m unittest discover -s tests
+        working-directory: legacy/python_reference
+
+  xlsx-contract:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.47.2"
+          channel: stable
+          cache: true
+      - run: python -m pip install "openpyxl>=3.1"
+        working-directory: .
+      - run: ./tool/bootstrap_platforms.sh
+      - run: flutter pub get
+      - run: dart run build_runner build --delete-conflicting-outputs
+      - run: mkdir -p build
+      - name: Rebuild oracle contract from frozen Python
+        run: |
+          python ../scripts/generate_reference_fixture.py \
+            --fixture test/fixtures/timesheet_cases.json \
+            --output build/python_reference.xlsx
+          python ../scripts/xlsx_contract.py \
+            build/python_reference.xlsx \
+            --output build/reference_current.json
+          python ../scripts/compare_xlsx_contract.py \
+            test/goldens/xlsx/reference_contract.json \
+            build/reference_current.json
+      - name: Generate Dart workbook and compare semantics
+        run: |
+          dart run tool/generate_fixture.dart \
+            --fixture test/fixtures/timesheet_cases.json \
+            --output build/dart_actual.xlsx
+          python ../scripts/xlsx_contract.py \
+            build/dart_actual.xlsx \
+            --output build/actual_contract.json
+          python ../scripts/compare_xlsx_contract.py \
+            test/goldens/xlsx/reference_contract.json \
+            build/actual_contract.json
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: xlsx-contract-debug
+          path: |
+            app/build/python_reference.xlsx
+            app/build/dart_actual.xlsx
+            app/build/reference_current.json
+            app/build/actual_contract.json
+          if-no-files-found: ignore
+          retention-days: 14

@@ -1,0 +1,27 @@
+# QA checklist
+
+- [ ] instalação limpa
+- [ ] primeiro lançamento
+- [ ] fechar app sem punches
+- [ ] registrar entrada
+- [ ] matar app, reabrir e verificar persistência
+- [ ] completar Entrada → Saída → Retorno → Saída final
+- [ ] confirmar bloqueio da quinta batida
+- [ ] editar primeira e batida intermediária
+- [ ] tentar ordem temporal impossível
+- [ ] excluir punch e reconstruir por correção manual
+- [ ] navegar mês anterior
+- [ ] validar mês vazio e dia incompleto
+- [ ] confirmar bloqueio de fechamento/exportação inválida
+- [ ] atividade padrão e override diário
+- [ ] nome/cargo/atividade com acentos
+- [ ] texto iniciado por `=` permanece literal no XLSX
+- [ ] gerar XLSX duas vezes e confirmar novo filename
+- [ ] comparar total UI × XLSX
+- [ ] abrir XLSX no Microsoft Excel
+- [ ] abrir XLSX no LibreOffice
+- [ ] cancelar e concluir share sheet
+- [ ] executar fluxo principal sem internet
+- [ ] validar text scaling e labels de acessibilidade
+- [ ] reiniciar aparelho/simulador e verificar persistência
+- [ ] validar lembretes após reboot/update no Android

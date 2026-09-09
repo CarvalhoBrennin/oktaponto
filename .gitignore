@@ -1,0 +1,38 @@
+# OS / editors
+.DS_Store
+.idea/
+.vscode/
+*.iml
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+
+# Flutter / Dart
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+build/
+coverage/
+
+# Generated Drift
+app/lib/core/database/app_database.g.dart
+
+# Generated platform folders are reproducible via app/tool/bootstrap_platforms.sh
+app/android/
+app/ios/
+
+# Local exports and databases
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+*.xlsx
+!legacy/python_reference/assets/*.xlsx
+
+# Keep semantic golden JSON, not generated workbooks
+app/build/
