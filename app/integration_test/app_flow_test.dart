@@ -7,8 +7,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:horafolio/core/database/app_database.dart';
 import 'package:horafolio/features/punch/domain/models.dart';
 import 'package:horafolio/providers/app_providers.dart';
+import 'package:integration_test/integration_test.dart';
 
 void main() {
+  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+
   test('register -> edit -> close -> export end-to-end application flow', () async {
     final db = AppDatabase(executor: NativeDatabase.memory());
     final times = <DateTime>[

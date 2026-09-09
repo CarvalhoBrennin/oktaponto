@@ -26,6 +26,9 @@ Data de empacotamento: 2026-09-09.
 - Fixture XLSX gerada pelo legado e normalizada pelo contrato semântico: **aprovada**.
 - Verificação explícita de `freeze A7`, gridlines ocultas, `[h]:mm`, `24:00` e proteção de texto iniciado em `=`: **aprovada no oráculo Python**.
 - `python -m py_compile` nos scripts Python e `bash -n` nos scripts shell: **aprovados**.
+- Cópia em `legacy/python_reference/` comparada por SHA-256 com os 68 arquivos do ZIP original: **idêntica**.
+- Patch reprodutível Android/iOS (`configure_platforms.py`) exercitado contra uma árvore nativa sintética: **aprovado**.
+- `git diff --check` e resolução de imports locais dos fontes Dart: **aprovados**.
 
 ## Gates que exigem runner Flutter
 
@@ -34,14 +37,15 @@ O ambiente usado para montar este pacote não possui Flutter/Dart. Por isso os s
 - `dart run build_runner build --delete-conflicting-outputs`;
 - `dart format --output=none --set-exit-if-changed .`;
 - `flutter analyze`;
-- `flutter test` e `flutter test integration_test`;
+- `flutter test` e `flutter test integration_test -d <device-id>`;
+- renderização inicial dos goldens UI (`app/tool/update_goldens.sh`);
 - geração Dart do XLSX e comparação Python × Dart;
 - build APK/AAB;
 - build iOS sem codesign;
 - smoke test em aparelho/simulador;
 - QA manual do XLSX em Microsoft Excel e LibreOffice.
 
-`pubspec.lock` e os diretórios `android/`/`ios/` são gerados pelo bootstrap num ambiente com Flutter 3.47.2.
+`pubspec.lock` e os diretórios `android/`/`ios/` são gerados pelo bootstrap num ambiente com Flutter 3.47.2. O harness determinístico de golden UI cobre os estados vazio, trabalhando e completo da tela Hoje; os PNGs de baseline não foram fabricados sem o renderer Flutter e devem ser produzidos uma vez com `app/tool/update_goldens.sh`.
 
 ## Decisões propositalmente não inventadas
 

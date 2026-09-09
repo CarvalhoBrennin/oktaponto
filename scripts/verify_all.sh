@@ -9,8 +9,19 @@ echo '== Legacy Python oracle =='
   python -m unittest discover -s tests
 )
 
+echo '== XLSX Python oracle =='
+mkdir -p app/build
+python scripts/generate_reference_fixture.py \
+  --fixture app/test/fixtures/timesheet_cases.json \
+  --output app/build/python_reference.xlsx
+python scripts/xlsx_contract.py app/build/python_reference.xlsx \
+  --output app/build/reference_current.json
+python scripts/compare_xlsx_contract.py \
+  app/test/goldens/xlsx/reference_contract.json \
+  app/build/reference_current.json
+
 if ! command -v flutter >/dev/null 2>&1 || ! command -v dart >/dev/null 2>&1; then
-  echo 'Flutter/Dart não encontrados; gates móveis não executados.' >&2
+  echo 'Gates Python concluídos. Flutter/Dart não encontrados; gates móveis não executados.' >&2
   exit 127
 fi
 
@@ -23,19 +34,12 @@ echo '== Flutter bootstrap / generated code =='
   dart format --output=none --set-exit-if-changed .
   flutter analyze
   flutter test --coverage
-  flutter test integration_test
+  if [[ -n "${HORAFOLIO_DEVICE_ID:-}" ]]; then
+    flutter test integration_test -d "$HORAFOLIO_DEVICE_ID"
+  else
+    echo 'Integration test móvel não executado: defina HORAFOLIO_DEVICE_ID com um device/emulador.' >&2
+  fi
 )
-
-echo '== XLSX Python oracle =='
-mkdir -p app/build
-python scripts/generate_reference_fixture.py \
-  --fixture app/test/fixtures/timesheet_cases.json \
-  --output app/build/python_reference.xlsx
-python scripts/xlsx_contract.py app/build/python_reference.xlsx \
-  --output app/build/reference_current.json
-python scripts/compare_xlsx_contract.py \
-  app/test/goldens/xlsx/reference_contract.json \
-  app/build/reference_current.json
 
 echo '== XLSX Dart implementation =='
 (
@@ -50,4 +54,4 @@ python scripts/compare_xlsx_contract.py \
   app/test/goldens/xlsx/reference_contract.json \
   app/build/actual_contract.json
 
-echo 'All available gates passed.'
+echo 'All gates passed.'

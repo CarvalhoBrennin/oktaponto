@@ -25,7 +25,12 @@ if manifest.exists():
     text = manifest.read_text(encoding="utf-8")
     permission = '<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>'
     if permission not in text:
-        text = text.replace(">", ">\n    " + permission, 1)
+        text = re.sub(
+            r"(<manifest\b[^>]*>)",
+            r"\1\n    " + permission,
+            text,
+            count=1,
+        )
     text = re.sub(r'android:label="horafolio"', 'android:label="HoraFólio"', text)
     receiver = '''
         <receiver android:exported="false" android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver" />
@@ -59,6 +64,11 @@ if gradle.exists():
         "targetCompatibility = JavaVersion.VERSION_17",
         text,
     )
+    text = re.sub(
+        r"jvmTarget\s*=\s*JavaVersion\.VERSION_\d+\.toString\(\)",
+        "jvmTarget = JavaVersion.VERSION_17.toString()",
+        text,
+    )
     if "isCoreLibraryDesugaringEnabled" not in text:
         text = text.replace(
             "compileOptions {",
@@ -71,6 +81,17 @@ if gradle.exists():
     if dep not in text:
         text += f"\n\ndependencies {{\n    {dep}\n}}\n"
     write(gradle, text)
+
+
+wrapper = root / "android/gradle/wrapper/gradle-wrapper.properties"
+if wrapper.exists():
+    text = wrapper.read_text(encoding="utf-8")
+    text = re.sub(
+        r"gradle-[0-9.]+-(bin|all)\.zip",
+        lambda match: f"gradle-8.13-{match.group(1)}.zip",
+        text,
+    )
+    write(wrapper, text)
 
 
 settings = root / "android/settings.gradle.kts"

@@ -6,6 +6,11 @@ import 'features/reminders/data/local_notification_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await LocalNotificationService.instance.initialize();
+  try {
+    await LocalNotificationService.instance.initialize();
+  } catch (error, stackTrace) {
+    debugPrint('Falha ao inicializar lembretes locais: $error');
+    debugPrintStack(stackTrace: stackTrace);
+  }
   runApp(const ProviderScope(child: HoraFolioApp()));
 }
