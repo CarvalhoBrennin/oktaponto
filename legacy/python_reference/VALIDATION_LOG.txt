@@ -1,0 +1,99 @@
+Validação do patch evoluído + duas rodadas de code review
+========================================================
+Data: 01/09/2026
+
+1. Baselines históricos
+- Projeto original: 23/23 testes antes da evolução.
+- Primeira evolução/automações: 37/37.
+- Patch após a primeira rodada completa de review: 100/100.
+- Árvore após a segunda rodada independente: 133/133.
+
+2. Compilação integral da árvore da segunda rodada
+Comando: python -m compileall -q main.py timesheet_app tests
+Resultado: OK
+
+3. Suíte oficial
+Comando: python -m unittest discover -s tests -q
+Resultado: 133/133 testes OK
+
+4. Pytest
+Comando: python -m pytest -q
+Resultado: 133/133 testes OK
+
+5. Higiene do diff / sintaxe
+- git diff --check: OK
+- AST parse dos arquivos Python: OK
+- sh -n build_scripts/run_linux_mac.sh build_scripts/run_tests.sh: OK
+- PySide6 não está instalado neste container; módulos Qt foram compilados/analisados estaticamente, sem runtime visual.
+
+6. Testes defensivos adicionais
+- parser OCR/texto: 10.000 strings aleatórias, sem crash;
+- TimesheetRecord.from_dict: 5.000 payloads malformados, sem crash fora das exceções esperadas de data inválida;
+- load_session: 1.000 formatos JSON/estruturas inválidas, sem exceção propagada;
+- consolidação automática: 800 cenários válidos com amostras de até 24 permutações de ordem por cenário; resultado invariável.
+
+7. Cobertura medida das camadas não-Qt
+Comando: coverage run --source=timesheet_app -m unittest discover -s tests -q
+Cobertura não-Qt agregada: 84%
+Destaques:
+- excel/generator.py: 97%
+- models.py: 92%
+- session_store.py: 90%
+- settings.py: 90%
+- parser/espelho_parser.py: 89%
+- file_utils.py: 87%
+- automation.py: 85%
+
+8. Invariantes reforçados nesta rodada
+- 24:00 preservado visualmente no Excel com [h]:mm;
+- >24:00/estado incoerente nunca é filtrado silenciosamente antes da exportação;
+- batch valida o conjunto original e faz rollback inclusive em KeyboardInterrupt;
+- consolidação automática é independente da ordem; conflito real nunca é resolvido por maioria acidental;
+- consolidação não muta registros recebidos;
+- decisão humana explícita é persistida e vence reimportações;
+- baixa confiança ignorada automaticamente continua pendente até decisão humana;
+- TSV não finito/geometria inválida é descartado;
+- imagens de origem gigantescas têm limite antes do processamento e previews Qt pedem decode escalado;
+- logs e nomes de saída são resistentes a múltiplas instâncias;
+- UI não permite contornar pendências pelo stepper/restauração da etapa Excel;
+- scripts Windows/Linux validam Python >=3.11 e propagam falhas.
+
+9. Validação funcional na árvore criada pelo patch candidato
+Origem: assets/brenno_abril_2026_referencia.xlsx
+- parse/consolidação: 20 registros;
+- elegíveis: 20;
+- pendências: 0;
+- total: 157:50;
+- possíveis dias úteis ausentes: 03/04/2026 e 21/04/2026 (feriados ausentes do arquivo, limitação documentada);
+- XLSX gerado/reaberto via openpyxl: OK;
+- atividade padrão: OK;
+- horas diárias e total em [h]:mm: OK;
+- CLI com espelho: 20 dias / 157:50: OK.
+
+Tesseract real:
+- health check: tesseract 5.5.0 · idioma(s): por+eng;
+- imagem sintética 1500x850: 13 palavras / 8 linhas / 103 caracteres / 0 warnings;
+- parser reconheceu 08/06/2026 com 8:00, status ok/incluído.
+
+10. Primeira aplicação limpa do patch candidato sobre o ZIP original
+Origem: /mnt/data/horafolio-master-source.zip
+- git apply --check: OK;
+- git apply: OK;
+- compileall: OK;
+- unittest: 133/133 OK;
+- pytest: 133/133 OK;
+- git apply --reverse --check: OK;
+- comparação da árvore aplicada com a árvore revisada: idêntica (excluídos .git/caches/cobertura).
+
+11. Segunda aplicação limpa do artefato final exato
+O patch foi regenerado após incorporar este relatório e reaplicado em uma segunda extração nova do ZIP original.
+- git apply --check: OK;
+- git apply: OK;
+- compileall: OK;
+- unittest: 133/133 OK;
+- pytest: 133/133 OK;
+- git apply --reverse --check: OK;
+- smoke do espelho/XLSX/CLI: 20 dias / 157:50 OK;
+- health check e OCR Tesseract real: OK.
+
+Somente esse artefato, cumulativo contra o ZIP original e contendo as duas rodadas de revisão, é o patch de entrega.
