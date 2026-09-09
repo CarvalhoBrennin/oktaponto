@@ -29,6 +29,27 @@ void main() {
     final result = validator.validate(MonthSummary(year: 2026, month: 9, days: [day(1), day(1)]));
     expect(result.issues.any((i) => i.code.startsWith('duplicate_date_')), isTrue);
   });
+  test('day from another month blocks close', () {
+    final result = validator.validate(
+      MonthSummary(
+        year: 2026,
+        month: 9,
+        days: [
+          WorkDaySummary(
+            date: DateTime(2026, 10, 1),
+            punches: const [],
+            status: WorkDayStatus.complete,
+            workedMinutes: 480,
+            includeInTimesheet: true,
+            activity: null,
+            issues: const [],
+          ),
+        ],
+      ),
+    );
+    expect(result.issues.any((i) => i.code.startsWith('wrong_month_')), isTrue);
+  });
+
   test('excluded incomplete day does not block if another included day exists', () {
     final result = validator.validate(MonthSummary(year: 2026, month: 9, days: [day(1), day(2, status: WorkDayStatus.open, include: false)]));
     expect(result.isValid, isTrue);

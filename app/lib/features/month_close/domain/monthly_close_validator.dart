@@ -16,6 +16,15 @@ final class DefaultMonthlyCloseValidator implements MonthlyCloseValidator {
       final key = '${day.date.year.toString().padLeft(4, '0')}-'
           '${day.date.month.toString().padLeft(2, '0')}-'
           '${day.date.day.toString().padLeft(2, '0')}';
+      if (day.date.year != month.year || day.date.month != month.month) {
+        issues.add(
+          ValidationIssue(
+            'wrong_month_$key',
+            'O dia $key não pertence ao mês ${month.month.toString().padLeft(2, '0')}/${month.year}.',
+          ),
+        );
+        continue;
+      }
       if (!seen.add(key)) {
         issues.add(ValidationIssue('duplicate_date_$key', 'Há data duplicada no fechamento: $key.'));
         continue;
