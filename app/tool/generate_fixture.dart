@@ -20,8 +20,8 @@ Future<void> main(List<String> args) async {
     return;
   }
 
-  final payload = jsonDecode(await File(fixture).readAsString())
-      as Map<String, dynamic>;
+  final payload =
+      jsonDecode(await File(fixture).readAsString()) as Map<String, dynamic>;
   final profileMap = payload['profile'] as Map<String, dynamic>;
   final profile = ProfileSettingsModel(
     employeeName: profileMap['employee_name'] as String,
@@ -60,7 +60,6 @@ Future<void> main(List<String> args) async {
   await requested.writeAsBytes(workbook.bytes, flush: true);
   stdout.writeln(requested.path);
 }
-
 
 /// Contract fixtures deliberately exercise XLSX representations (including a
 /// 24:00 cell) independently from production punch-domain eligibility.

@@ -19,11 +19,17 @@ void main() {
   test('schema version starts at 1', () => expect(db.schemaVersion, 1));
 
   test('insert survives a new repository instance on same database', () async {
-    await punches.insert(PunchDraft(localDate: '2026-09-01', occurredAtUtc: DateTime.utc(2026, 9, 1, 8), utcOffsetMinutes: -180, kind: PunchKind.in_));
+    await punches.insert(
+      PunchDraft(
+        localDate: '2026-09-01',
+        occurredAtUtc: DateTime.utc(2026, 9, 1, 8),
+        utcOffsetMinutes: -180,
+        kind: PunchKind.in_,
+      ),
+    );
     final reopenedRepo = DriftPunchRepository(db);
     expect(await reopenedRepo.listDay(DateTime(2026, 9, 1)), hasLength(1));
   });
-
 
   test('file-backed database survives close and reopen', () async {
     final dir = await Directory.systemTemp.createTemp('horafolio_db_');
@@ -47,50 +53,81 @@ void main() {
     await dir.delete(recursive: true);
   });
 
-  test('reminder repository rejects blank labels and invalid weekday masks', () async {
-    final reminders = DriftReminderRepository(db);
-    await expectLater(
-      reminders.save(
-        const ReminderConfig(
-          id: 0,
-          label: ' ',
-          hour: 8,
-          minute: 0,
-          weekdaysMask: 31,
-          enabled: true,
+  test(
+    'reminder repository rejects blank labels and invalid weekday masks',
+    () async {
+      final reminders = DriftReminderRepository(db);
+      await expectLater(
+        reminders.save(
+          const ReminderConfig(
+            id: 0,
+            label: ' ',
+            hour: 8,
+            minute: 0,
+            weekdaysMask: 31,
+            enabled: true,
+          ),
         ),
-      ),
-      throwsArgumentError,
-    );
-    await expectLater(
-      reminders.save(
-        const ReminderConfig(
-          id: 0,
-          label: 'Ponto',
-          hour: 8,
-          minute: 0,
-          weekdaysMask: 0,
-          enabled: true,
+        throwsArgumentError,
+      );
+      await expectLater(
+        reminders.save(
+          const ReminderConfig(
+            id: 0,
+            label: 'Ponto',
+            hour: 8,
+            minute: 0,
+            weekdaysMask: 0,
+            enabled: true,
+          ),
         ),
-      ),
-      throwsArgumentError,
-    );
-  });
+        throwsArgumentError,
+      );
+    },
+  );
 
-  test('soft delete removes punch from calculation queries and writes audit', () async {
-    final created = await punches.insert(PunchDraft(localDate: '2026-09-01', occurredAtUtc: DateTime.utc(2026, 9, 1, 8), utcOffsetMinutes: -180, kind: PunchKind.in_));
-    await punches.softDelete(created.id);
-    expect(await punches.listDay(DateTime(2026, 9, 1)), isEmpty);
-    final audits = await db.select(db.punchAudit).get();
-    expect(audits.map((a) => a.action), containsAll(['insert', 'delete']));
-  });
+  test(
+    'soft delete removes punch from calculation queries and writes audit',
+    () async {
+      final created = await punches.insert(
+        PunchDraft(
+          localDate: '2026-09-01',
+          occurredAtUtc: DateTime.utc(2026, 9, 1, 8),
+          utcOffsetMinutes: -180,
+          kind: PunchKind.in_,
+        ),
+      );
+      await punches.softDelete(created.id);
+      expect(await punches.listDay(DateTime(2026, 9, 1)), isEmpty);
+      final audits = await db.select(db.punchAudit).get();
+      expect(audits.map((a) => a.action), containsAll(['insert', 'delete']));
+    },
+  );
 
   test('manual edit creates audit and changes timestamp', () async {
-    final created = await punches.insert(PunchDraft(localDate: '2026-09-01', occurredAtUtc: DateTime.utc(2026, 9, 1, 8), utcOffsetMinutes: -180, kind: PunchKind.in_));
-    await punches.update(PunchEdit(id: created.id, localDate: '2026-09-01', occurredAtUtc: DateTime.utc(2026, 9, 1, 9), utcOffsetMinutes: -180, kind: PunchKind.in_));
+    final created = await punches.insert(
+      PunchDraft(
+        localDate: '2026-09-01',
+        occurredAtUtc: DateTime.utc(2026, 9, 1, 8),
+        utcOffsetMinutes: -180,
+        kind: PunchKind.in_,
+      ),
+    );
+    await punches.update(
+      PunchEdit(
+        id: created.id,
+        localDate: '2026-09-01',
+        occurredAtUtc: DateTime.utc(2026, 9, 1, 9),
+        utcOffsetMinutes: -180,
+        kind: PunchKind.in_,
+      ),
+    );
     final edited = (await punches.listDay(DateTime(2026, 9, 1))).single;
     expect(edited.occurredAtUtc.hour, 9);
     expect(edited.isEdited, isTrue);
-    expect((await db.select(db.punchAudit).get()).map((a) => a.action), contains('update'));
+    expect(
+      (await db.select(db.punchAudit).get()).map((a) => a.action),
+      contains('update'),
+    );
   });
 }

@@ -5,7 +5,11 @@ import '../../../core/time/time_utils.dart';
 import '../../../providers/app_providers.dart';
 import '../domain/models.dart';
 
-Future<void> showWorkDayEditor(BuildContext context, WidgetRef ref, DateTime date) async {
+Future<void> showWorkDayEditor(
+  BuildContext context,
+  WidgetRef ref,
+  DateTime date,
+) async {
   await showDialog<void>(
     context: context,
     builder: (_) => _WorkDayEditorDialog(date: date),
@@ -19,7 +23,8 @@ class _WorkDayEditorDialog extends ConsumerStatefulWidget {
   final DateTime date;
 
   @override
-  ConsumerState<_WorkDayEditorDialog> createState() => _WorkDayEditorDialogState();
+  ConsumerState<_WorkDayEditorDialog> createState() =>
+      _WorkDayEditorDialogState();
 }
 
 class _WorkDayEditorDialogState extends ConsumerState<_WorkDayEditorDialog> {
@@ -39,7 +44,9 @@ class _WorkDayEditorDialogState extends ConsumerState<_WorkDayEditorDialog> {
 
   Future<void> _loadMetadata() async {
     try {
-      final metadata = await ref.read(workDayRepositoryProvider).getDay(widget.date);
+      final metadata = await ref
+          .read(workDayRepositoryProvider)
+          .getDay(widget.date);
       if (!mounted) return;
       setState(() {
         _include = metadata.includeInTimesheet;
@@ -62,16 +69,22 @@ class _WorkDayEditorDialogState extends ConsumerState<_WorkDayEditorDialog> {
 
   Future<bool> _saveMetadata() async {
     try {
-      await ref.read(workDayRepositoryProvider).upsert(
+      await ref
+          .read(workDayRepositoryProvider)
+          .upsert(
             WorkDayMetadata(
               localDate: localDateKey(widget.date),
               includeInTimesheet: _include,
-              activity: _activity.text.trim().isEmpty ? null : _activity.text.trim(),
+              activity: _activity.text.trim().isEmpty
+                  ? null
+                  : _activity.text.trim(),
               note: _note.text.trim().isEmpty ? null : _note.text.trim(),
             ),
           );
       ref.invalidate(daySummaryProvider(widget.date));
-      ref.invalidate(monthSummaryProvider(DateTime(widget.date.year, widget.date.month)));
+      ref.invalidate(
+        monthSummaryProvider(DateTime(widget.date.year, widget.date.month)),
+      );
       if (mounted) setState(() => _error = null);
       return true;
     } catch (error) {
@@ -85,12 +98,22 @@ class _WorkDayEditorDialogState extends ConsumerState<_WorkDayEditorDialog> {
     final picked = await showTimePicker(context: context, initialTime: now);
     if (picked == null) return;
     try {
-      await ref.read(punchServiceProvider).addManualPunch(
+      await ref
+          .read(punchServiceProvider)
+          .addManualPunch(
             widget.date,
-            DateTime(widget.date.year, widget.date.month, widget.date.day, picked.hour, picked.minute),
+            DateTime(
+              widget.date.year,
+              widget.date.month,
+              widget.date.day,
+              picked.hour,
+              picked.minute,
+            ),
           );
       ref.invalidate(daySummaryProvider(widget.date));
-      ref.invalidate(monthSummaryProvider(DateTime(widget.date.year, widget.date.month)));
+      ref.invalidate(
+        monthSummaryProvider(DateTime(widget.date.year, widget.date.month)),
+      );
       setState(() => _error = null);
     } catch (error) {
       setState(() => _error = error.toString().replaceFirst('Bad state: ', ''));
@@ -113,20 +136,21 @@ class _WorkDayEditorDialogState extends ConsumerState<_WorkDayEditorDialog> {
     );
     try {
       final editedOffsetMinutes = editedLocal.timeZoneOffset.inMinutes;
-      await ref.read(punchServiceProvider).editPunch(
+      await ref
+          .read(punchServiceProvider)
+          .editPunch(
             PunchEdit(
               id: punch.id,
               localDate: localDateKey(widget.date),
-              occurredAtUtc: wallClockToUtc(
-                editedLocal,
-                editedOffsetMinutes,
-              ),
+              occurredAtUtc: wallClockToUtc(editedLocal, editedOffsetMinutes),
               utcOffsetMinutes: editedOffsetMinutes,
               kind: punch.kind,
             ),
           );
       ref.invalidate(daySummaryProvider(widget.date));
-      ref.invalidate(monthSummaryProvider(DateTime(widget.date.year, widget.date.month)));
+      ref.invalidate(
+        monthSummaryProvider(DateTime(widget.date.year, widget.date.month)),
+      );
       setState(() => _error = null);
     } catch (error) {
       setState(() => _error = error.toString().replaceFirst('Bad state: ', ''));
@@ -134,14 +158,23 @@ class _WorkDayEditorDialogState extends ConsumerState<_WorkDayEditorDialog> {
   }
 
   Future<void> _deletePunch(Punch punch) async {
-    final confirmed = await showDialog<bool>(
+    final confirmed =
+        await showDialog<bool>(
           context: context,
           builder: (context) => AlertDialog(
             title: const Text('Excluir batida?'),
-            content: Text('Excluir ${formatClock(punch.occurredAtLocal)}? O evento ficará registrado na auditoria.'),
+            content: Text(
+              'Excluir ${formatClock(punch.occurredAtLocal)}? O evento ficará registrado na auditoria.',
+            ),
             actions: [
-              TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancelar')),
-              FilledButton(onPressed: () => Navigator.pop(context, true), child: const Text('Excluir')),
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Cancelar'),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text('Excluir'),
+              ),
             ],
           ),
         ) ??
@@ -150,10 +183,15 @@ class _WorkDayEditorDialogState extends ConsumerState<_WorkDayEditorDialog> {
     try {
       await ref.read(punchServiceProvider).deletePunch(punch.id, widget.date);
       ref.invalidate(daySummaryProvider(widget.date));
-      ref.invalidate(monthSummaryProvider(DateTime(widget.date.year, widget.date.month)));
+      ref.invalidate(
+        monthSummaryProvider(DateTime(widget.date.year, widget.date.month)),
+      );
       if (mounted) setState(() => _error = null);
     } catch (error) {
-      if (mounted) setState(() => _error = error.toString().replaceFirst('Bad state: ', ''));
+      if (mounted)
+        setState(
+          () => _error = error.toString().replaceFirst('Bad state: ', ''),
+        );
     }
   }
 
@@ -170,7 +208,10 @@ class _WorkDayEditorDialogState extends ConsumerState<_WorkDayEditorDialog> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               if (_error != null) ...[
-                Text(_error!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
+                Text(
+                  _error!,
+                  style: TextStyle(color: Theme.of(context).colorScheme.error),
+                ),
                 const SizedBox(height: 12),
               ],
               summary.when(
@@ -182,8 +223,14 @@ class _WorkDayEditorDialogState extends ConsumerState<_WorkDayEditorDialog> {
                       ListTile(
                         contentPadding: EdgeInsets.zero,
                         leading: CircleAvatar(child: Text('${i + 1}')),
-                        title: Text(formatClock(day.punches[i].occurredAtLocal)),
-                        subtitle: Text(day.punches[i].kind == PunchKind.in_ ? 'Entrada' : 'Saída'),
+                        title: Text(
+                          formatClock(day.punches[i].occurredAtLocal),
+                        ),
+                        subtitle: Text(
+                          day.punches[i].kind == PunchKind.in_
+                              ? 'Entrada'
+                              : 'Saída',
+                        ),
                         trailing: Wrap(
                           children: [
                             IconButton(
@@ -208,13 +255,20 @@ class _WorkDayEditorDialogState extends ConsumerState<_WorkDayEditorDialog> {
                     const SizedBox(height: 8),
                     Align(
                       alignment: Alignment.centerLeft,
-                      child: Text('Total calculado: ${minutesToHhmm(day.workedMinutes)}'),
+                      child: Text(
+                        'Total calculado: ${minutesToHhmm(day.workedMinutes)}',
+                      ),
                     ),
                     if (day.issues.isNotEmpty)
                       for (final issue in day.issues)
                         Align(
                           alignment: Alignment.centerLeft,
-                          child: Text('• ${issue.message}', style: TextStyle(color: Theme.of(context).colorScheme.error)),
+                          child: Text(
+                            '• ${issue.message}',
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.error,
+                            ),
+                          ),
                         ),
                   ],
                 ),
@@ -223,27 +277,36 @@ class _WorkDayEditorDialogState extends ConsumerState<_WorkDayEditorDialog> {
               SwitchListTile(
                 contentPadding: EdgeInsets.zero,
                 value: _include,
-                onChanged: _metadataLoaded ? (value) => setState(() => _include = value) : null,
+                onChanged: _metadataLoaded
+                    ? (value) => setState(() => _include = value)
+                    : null,
                 title: const Text('Incluir no timesheet'),
               ),
               TextField(
                 controller: _activity,
                 enabled: _metadataLoaded,
-                decoration: const InputDecoration(labelText: 'Atividade do dia (opcional)'),
+                decoration: const InputDecoration(
+                  labelText: 'Atividade do dia (opcional)',
+                ),
               ),
               const SizedBox(height: 12),
               TextField(
                 controller: _note,
                 enabled: _metadataLoaded,
                 maxLines: 2,
-                decoration: const InputDecoration(labelText: 'Observação (opcional)'),
+                decoration: const InputDecoration(
+                  labelText: 'Observação (opcional)',
+                ),
               ),
             ],
           ),
         ),
       ),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(context), child: const Text('Fechar')),
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Fechar'),
+        ),
         FilledButton(
           onPressed: _metadataLoaded
               ? () async {

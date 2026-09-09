@@ -31,10 +31,13 @@ final class DefaultWorkHoursCalculator implements WorkHoursCalculator {
 
     var workedMinutes = 0;
     for (var index = 0; index + 1 < sorted.length; index += 2) {
-      if (sorted[index].kind != PunchKind.in_ || sorted[index + 1].kind != PunchKind.out) {
+      if (sorted[index].kind != PunchKind.in_ ||
+          sorted[index + 1].kind != PunchKind.out) {
         continue;
       }
-      final duration = sorted[index + 1].occurredAtUtc.difference(sorted[index].occurredAtUtc);
+      final duration = sorted[index + 1].occurredAtUtc.difference(
+        sorted[index].occurredAtUtc,
+      );
       if (!duration.isNegative && duration > Duration.zero) {
         workedMinutes += duration.inMinutes;
       }
@@ -43,8 +46,7 @@ final class DefaultWorkHoursCalculator implements WorkHoursCalculator {
     final key = localDateKey(date);
     if (sorted.any(
       (punch) =>
-          punch.localDate != key ||
-          localDateKey(punch.occurredAtLocal) != key,
+          punch.localDate != key || localDateKey(punch.occurredAtLocal) != key,
     )) {
       issues.add(
         const ValidationIssue(

@@ -26,7 +26,9 @@ void main() {
 
     await DataResetService(database: db, files: files).clearAll();
 
-    final profileCount = await db.customSelect('SELECT COUNT(*) AS c FROM profile_settings').getSingle();
+    final profileCount = await db
+        .customSelect('SELECT COUNT(*) AS c FROM profile_settings')
+        .getSingle();
     expect(profileCount.read<int>('c'), 0);
     expect(await export.exists(), isFalse);
   });

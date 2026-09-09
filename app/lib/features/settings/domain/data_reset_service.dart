@@ -7,10 +7,7 @@ import '../../../core/files/file_service.dart';
 /// are then removed. The caller is responsible for cancelling OS reminders and
 /// invalidating presentation providers after this operation succeeds.
 final class DataResetService {
-  const DataResetService({
-    required this.database,
-    required this.files,
-  });
+  const DataResetService({required this.database, required this.files});
 
   final AppDatabase database;
   final FileService files;

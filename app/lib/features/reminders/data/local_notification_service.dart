@@ -60,19 +60,20 @@ final class LocalNotificationService {
   Future<bool> requestPermissions() async {
     await initialize();
     bool? granted;
-    final android = _plugin.resolvePlatformSpecificImplementation<
-        AndroidFlutterLocalNotificationsPlugin>();
+    final android = _plugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >();
     if (android != null) {
       granted = await android.requestNotificationsPermission() ?? true;
     }
-    final ios = _plugin.resolvePlatformSpecificImplementation<
-        IOSFlutterLocalNotificationsPlugin>();
+    final ios = _plugin
+        .resolvePlatformSpecificImplementation<
+          IOSFlutterLocalNotificationsPlugin
+        >();
     if (ios != null) {
-      granted = await ios.requestPermissions(
-            alert: true,
-            badge: true,
-            sound: true,
-          ) ??
+      granted =
+          await ios.requestPermissions(alert: true, badge: true, sound: true) ??
           true;
     }
     // Platforms without a runtime notification permission API are treated as
@@ -99,16 +100,10 @@ final class LocalNotificationService {
 
   Future<void> schedule(ReminderConfig reminder) async {
     await _requireTimezone();
-    for (var weekday = DateTime.monday;
-        weekday <= DateTime.sunday;
-        weekday++) {
+    for (var weekday = DateTime.monday; weekday <= DateTime.sunday; weekday++) {
       if (!reminder.includesWeekday(weekday)) continue;
       final id = reminder.id * 10 + weekday;
-      final when = _nextWeekdayTime(
-        weekday,
-        reminder.hour,
-        reminder.minute,
-      );
+      final when = _nextWeekdayTime(weekday, reminder.hour, reminder.minute);
       await _plugin.zonedSchedule(
         id: id,
         title: 'HoraFólio',
@@ -133,8 +128,14 @@ final class LocalNotificationService {
 
   tz.TZDateTime _nextWeekdayTime(int weekday, int hour, int minute) {
     final now = tz.TZDateTime.now(tz.local);
-    var candidate =
-        tz.TZDateTime(tz.local, now.year, now.month, now.day, hour, minute);
+    var candidate = tz.TZDateTime(
+      tz.local,
+      now.year,
+      now.month,
+      now.day,
+      hour,
+      minute,
+    );
     while (candidate.weekday != weekday || !candidate.isAfter(now)) {
       final nextDay = candidate.add(const Duration(days: 1));
       candidate = tz.TZDateTime(

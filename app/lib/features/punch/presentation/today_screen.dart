@@ -71,20 +71,20 @@ class _TodayScreenState extends ConsumerState<TodayScreen>
   }
 
   String _cta(int count) => switch (count) {
-        0 => 'Registrar entrada',
-        1 => 'Registrar saída',
-        2 => 'Registrar retorno',
-        3 => 'Registrar saída final',
-        _ => 'Dia completo',
-      };
+    0 => 'Registrar entrada',
+    1 => 'Registrar saída',
+    2 => 'Registrar retorno',
+    3 => 'Registrar saída final',
+    _ => 'Dia completo',
+  };
 
   String _status(WorkDayStatus status) => switch (status) {
-        WorkDayStatus.empty => 'Não iniciado',
-        WorkDayStatus.open => 'Trabalhando',
-        WorkDayStatus.paused => 'Intervalo',
-        WorkDayStatus.complete => 'Completo',
-        WorkDayStatus.invalid => 'Revisão necessária',
-      };
+    WorkDayStatus.empty => 'Não iniciado',
+    WorkDayStatus.open => 'Trabalhando',
+    WorkDayStatus.paused => 'Intervalo',
+    WorkDayStatus.complete => 'Completo',
+    WorkDayStatus.invalid => 'Revisão necessária',
+  };
 
   Future<void> _register(DateTime today) async {
     if (_busy) return;
@@ -137,7 +137,9 @@ class _TodayScreenState extends ConsumerState<TodayScreen>
                   padding: const EdgeInsets.all(16),
                   child: Text(
                     _error!,
-                    style: TextStyle(color: Theme.of(context).colorScheme.error),
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.error,
+                    ),
                   ),
                 ),
               ),
@@ -177,7 +179,9 @@ class _TodayScreenState extends ConsumerState<TodayScreen>
                               ? Icons.login
                               : Icons.logout,
                         ),
-                        title: Text(formatClock(day.punches[i].occurredAtLocal)),
+                        title: Text(
+                          formatClock(day.punches[i].occurredAtLocal),
+                        ),
                         subtitle: Text(
                           day.punches[i].kind == PunchKind.in_
                               ? 'Entrada'
@@ -190,7 +194,8 @@ class _TodayScreenState extends ConsumerState<TodayScreen>
                     ),
                   const SizedBox(height: 16),
                   FilledButton.icon(
-                    onPressed: _busy ||
+                    onPressed:
+                        _busy ||
                             day.punches.length >= 4 ||
                             day.status == WorkDayStatus.invalid
                         ? null

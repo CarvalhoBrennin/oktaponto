@@ -71,7 +71,9 @@ class _MonthScreenState extends ConsumerState<MonthScreen> {
       _error = null;
     });
     try {
-      final currentMonth = await ref.refresh(monthSummaryProvider(_month).future);
+      final currentMonth = await ref.refresh(
+        monthSummaryProvider(_month).future,
+      );
       final profile = await ref.read(settingsRepositoryProvider).getProfile();
       final currentSignature = timesheetSourceSignature(currentMonth, profile);
       if (currentSignature != signature) {
@@ -84,10 +86,9 @@ class _MonthScreenState extends ConsumerState<MonthScreen> {
           'O arquivo exportado não existe mais. Gere o timesheet novamente.',
         );
       }
-      await ref.read(shareServiceProvider).shareXlsx(
-            export.outputPath,
-            monthYear: export.monthYear,
-          );
+      await ref
+          .read(shareServiceProvider)
+          .shareXlsx(export.outputPath, monthYear: export.monthYear);
     } catch (error) {
       if (!mounted) return;
       setState(() {
@@ -143,11 +144,15 @@ class _MonthScreenState extends ConsumerState<MonthScreen> {
             ),
             error: (error, _) => Text('Erro: $error'),
             data: (month) {
-              final validation = ref.watch(monthlyValidatorProvider).validate(month);
-              final included =
-                  month.days.where((d) => d.includeInTimesheet).length;
+              final validation = ref
+                  .watch(monthlyValidatorProvider)
+                  .validate(month);
+              final included = month.days
+                  .where((d) => d.includeInTimesheet)
+                  .length;
               final currentProfile = asyncProfile.asData?.value;
-              final exportIsCurrent = _lastExport != null &&
+              final exportIsCurrent =
+                  _lastExport != null &&
                   _lastExportSignature != null &&
                   currentProfile != null &&
                   timesheetSourceSignature(month, currentProfile) ==
@@ -178,8 +183,9 @@ class _MonthScreenState extends ConsumerState<MonthScreen> {
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                     const SizedBox(height: 8),
-                    for (final issue
-                        in validation.issues.where((i) => i.blocking))
+                    for (final issue in validation.issues.where(
+                      (i) => i.blocking,
+                    ))
                       Card(
                         child: ListTile(
                           leading: Icon(
@@ -208,8 +214,9 @@ class _MonthScreenState extends ConsumerState<MonthScreen> {
                     ),
                   const SizedBox(height: 16),
                   FilledButton.icon(
-                    onPressed:
-                        validation.isValid && !_busy ? () => _export(month) : null,
+                    onPressed: validation.isValid && !_busy
+                        ? () => _export(month)
+                        : null,
                     icon: _busy
                         ? const SizedBox.square(
                             dimension: 18,
@@ -226,7 +233,9 @@ class _MonthScreenState extends ConsumerState<MonthScreen> {
                     const Card(
                       child: ListTile(
                         leading: Icon(Icons.refresh),
-                        title: Text('Os dados mudaram após a última exportação.'),
+                        title: Text(
+                          'Os dados mudaram após a última exportação.',
+                        ),
                         subtitle: Text(
                           'Gere o timesheet novamente para habilitar o compartilhamento.',
                         ),
@@ -244,10 +253,9 @@ class _MonthScreenState extends ConsumerState<MonthScreen> {
                             const Text('Arquivo gerado'),
                             const SizedBox(height: 4),
                             Text(
-                              File(_lastExport!.outputPath)
-                                  .path
-                                  .split(Platform.pathSeparator)
-                                  .last,
+                              File(
+                                _lastExport!.outputPath,
+                              ).path.split(Platform.pathSeparator).last,
                               style: Theme.of(context).textTheme.titleMedium,
                             ),
                             Text(

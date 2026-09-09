@@ -6,7 +6,10 @@ final class PunchSequenceValidator {
   List<ValidationIssue> validate(List<Punch> punches) {
     if (punches.length > 4) {
       return const [
-        ValidationIssue('too_many_punches', 'O MVP permite no máximo quatro batidas por dia.'),
+        ValidationIssue(
+          'too_many_punches',
+          'O MVP permite no máximo quatro batidas por dia.',
+        ),
       ];
     }
 
@@ -24,7 +27,8 @@ final class PunchSequenceValidator {
         );
       }
       if (index > 0) {
-        final previous = punches[index - 1].occurredAtUtc.millisecondsSinceEpoch;
+        final previous =
+            punches[index - 1].occurredAtUtc.millisecondsSinceEpoch;
         final current = punches[index].occurredAtUtc.millisecondsSinceEpoch;
         if (current <= previous) {
           issues.add(

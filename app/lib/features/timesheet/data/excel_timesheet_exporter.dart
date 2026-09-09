@@ -20,13 +20,10 @@ final class ExcelTimesheetExporter implements TimesheetExporter {
     ProfileSettingsModel profile,
     String outputDirectory,
   ) async {
-    final workbook = TimesheetWorkbookBuilder(validator: validator).build(
-      month,
-      profile,
-    );
-    final filename = defaultFilenameForMonth(
-      DateTime(month.year, month.month),
-    );
+    final workbook = TimesheetWorkbookBuilder(
+      validator: validator,
+    ).build(month, profile);
+    final filename = defaultFilenameForMonth(DateTime(month.year, month.month));
     final outputPath = await fileService.writeUniqueAtomically(
       outputDirectory,
       filename,

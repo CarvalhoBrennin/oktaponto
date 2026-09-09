@@ -26,7 +26,9 @@ void main() {
       await db.close();
     });
 
-    await container.read(settingsRepositoryProvider).saveProfile(
+    await container
+        .read(settingsRepositoryProvider)
+        .saveProfile(
           const ProfileSettingsModel(
             employeeName: 'Pessoa Teste',
             jobTitle: 'Analista',
@@ -62,7 +64,10 @@ void main() {
 
     await tester.tap(find.text('Mês'));
     await tester.pumpAndSettle();
-    expect(find.text('Mês consistente e pronto para exportar.'), findsOneWidget);
+    expect(
+      find.text('Mês consistente e pronto para exportar.'),
+      findsOneWidget,
+    );
     await tester.tap(find.text('Gerar timesheet XLSX'));
     await tester.pumpAndSettle(const Duration(seconds: 2));
     expect(find.text('Arquivo gerado'), findsOneWidget);

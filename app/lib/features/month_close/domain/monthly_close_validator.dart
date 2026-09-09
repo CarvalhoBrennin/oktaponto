@@ -18,7 +18,8 @@ final class DefaultMonthlyCloseValidator implements MonthlyCloseValidator {
     final seen = <String>{};
 
     for (final day in month.days) {
-      final key = '${day.date.year.toString().padLeft(4, '0')}-'
+      final key =
+          '${day.date.year.toString().padLeft(4, '0')}-'
           '${day.date.month.toString().padLeft(2, '0')}-'
           '${day.date.day.toString().padLeft(2, '0')}';
       if (day.date.year != month.year || day.date.month != month.month) {
@@ -84,17 +85,13 @@ final class DefaultMonthlyCloseValidator implements MonthlyCloseValidator {
       }
       if (day.workedMinutes > 1440) {
         issues.add(
-          ValidationIssue(
-            'over_24h_$key',
-            'O dia $key ultrapassa 24:00.',
-          ),
+          ValidationIssue('over_24h_$key', 'O dia $key ultrapassa 24:00.'),
         );
       }
       issues.addAll(day.issues.where((issue) => issue.blocking));
     }
 
-    final included =
-        month.days.where((day) => day.includeInTimesheet).toList();
+    final included = month.days.where((day) => day.includeInTimesheet).toList();
     if (included.isEmpty) {
       issues.add(
         const ValidationIssue(

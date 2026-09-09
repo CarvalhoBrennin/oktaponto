@@ -13,8 +13,7 @@ class ReminderReconciler extends ConsumerStatefulWidget {
   final Widget child;
 
   @override
-  ConsumerState<ReminderReconciler> createState() =>
-      _ReminderReconcilerState();
+  ConsumerState<ReminderReconciler> createState() => _ReminderReconcilerState();
 }
 
 class _ReminderReconcilerState extends ConsumerState<ReminderReconciler> {

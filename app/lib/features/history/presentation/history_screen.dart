@@ -28,12 +28,12 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   }
 
   String _status(WorkDayStatus status) => switch (status) {
-        WorkDayStatus.empty => 'Vazio',
-        WorkDayStatus.open => 'Aberto',
-        WorkDayStatus.paused => 'Incompleto',
-        WorkDayStatus.complete => 'Completo',
-        WorkDayStatus.invalid => 'Inválido',
-      };
+    WorkDayStatus.empty => 'Vazio',
+    WorkDayStatus.open => 'Aberto',
+    WorkDayStatus.paused => 'Incompleto',
+    WorkDayStatus.complete => 'Completo',
+    WorkDayStatus.invalid => 'Inválido',
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -46,18 +46,35 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
             padding: const EdgeInsets.fromLTRB(12, 4, 12, 8),
             child: Row(
               children: [
-                IconButton(onPressed: () => _move(-1), icon: const Icon(Icons.chevron_left), tooltip: 'Mês anterior'),
-                Expanded(
-                  child: Text(monthYearPt(_month), textAlign: TextAlign.center, style: Theme.of(context).textTheme.titleMedium),
+                IconButton(
+                  onPressed: () => _move(-1),
+                  icon: const Icon(Icons.chevron_left),
+                  tooltip: 'Mês anterior',
                 ),
-                IconButton(onPressed: () => _move(1), icon: const Icon(Icons.chevron_right), tooltip: 'Próximo mês'),
+                Expanded(
+                  child: Text(
+                    monthYearPt(_month),
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                ),
+                IconButton(
+                  onPressed: () => _move(1),
+                  icon: const Icon(Icons.chevron_right),
+                  tooltip: 'Próximo mês',
+                ),
               ],
             ),
           ),
           Expanded(
             child: summary.when(
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (error, _) => Center(child: Padding(padding: const EdgeInsets.all(20), child: Text('Erro: $error'))),
+              error: (error, _) => Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Text('Erro: $error'),
+                ),
+              ),
               data: (month) {
                 if (month.days.isEmpty) {
                   return Center(
@@ -69,7 +86,11 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                         const Text('Nenhum registro neste mês.'),
                         const SizedBox(height: 12),
                         OutlinedButton(
-                          onPressed: () => showWorkDayEditor(context, ref, DateTime(_month.year, _month.month, 1)),
+                          onPressed: () => showWorkDayEditor(
+                            context,
+                            ref,
+                            DateTime(_month.year, _month.month, 1),
+                          ),
                           child: const Text('Adicionar correção manual'),
                         ),
                       ],
@@ -77,7 +98,8 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                   );
                 }
                 return RefreshIndicator(
-                  onRefresh: () async => ref.refresh(monthSummaryProvider(_month).future),
+                  onRefresh: () async =>
+                      ref.refresh(monthSummaryProvider(_month).future),
                   child: ListView.builder(
                     padding: const EdgeInsets.fromLTRB(12, 0, 12, 20),
                     itemCount: month.days.length,
@@ -85,11 +107,17 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                       final day = month.days[index];
                       return Card(
                         child: ListTile(
-                          onTap: () => showWorkDayEditor(context, ref, day.date),
+                          onTap: () =>
+                              showWorkDayEditor(context, ref, day.date),
                           leading: CircleAvatar(child: Text('${day.date.day}')),
                           title: Text(weekdayPt(day.date)),
-                          subtitle: Text('${_status(day.status)} • ${day.punches.length} batidas${day.includeInTimesheet ? '' : ' • fora do timesheet'}'),
-                          trailing: Text(minutesToHhmm(day.workedMinutes), style: Theme.of(context).textTheme.titleMedium),
+                          subtitle: Text(
+                            '${_status(day.status)} • ${day.punches.length} batidas${day.includeInTimesheet ? '' : ' • fora do timesheet'}',
+                          ),
+                          trailing: Text(
+                            minutesToHhmm(day.workedMinutes),
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
                         ),
                       );
                     },
@@ -104,8 +132,14 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
         onPressed: () async {
           final initial = DateTime(_month.year, _month.month, 1);
           final last = DateTime(_month.year, _month.month + 1, 0);
-          final picked = await showDatePicker(context: context, initialDate: initial, firstDate: initial, lastDate: last);
-          if (picked != null && context.mounted) await showWorkDayEditor(context, ref, picked);
+          final picked = await showDatePicker(
+            context: context,
+            initialDate: initial,
+            firstDate: initial,
+            lastDate: last,
+          );
+          if (picked != null && context.mounted)
+            await showWorkDayEditor(context, ref, picked);
         },
         icon: const Icon(Icons.add),
         label: const Text('Correção'),

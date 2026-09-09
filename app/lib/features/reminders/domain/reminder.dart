@@ -15,7 +15,8 @@ final class ReminderConfig {
   final int weekdaysMask;
   final bool enabled;
 
-  bool includesWeekday(int weekday) => (weekdaysMask & (1 << (weekday - 1))) != 0;
+  bool includesWeekday(int weekday) =>
+      (weekdaysMask & (1 << (weekday - 1))) != 0;
 
   ReminderConfig copyWith({
     int? id,

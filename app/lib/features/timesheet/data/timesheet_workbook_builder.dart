@@ -61,23 +61,22 @@ final class TimesheetWorkbookBuilder {
     Border? top,
     Border? bottom,
     NumFormat? numberFormat,
-  }) =>
-      CellStyle(
-        fontFamily: _font,
-        fontSize: size,
-        bold: bold,
-        italic: italic,
-        fontColorHex: _c(fg),
-        backgroundColorHex: _c(bg),
-        fillPattern: FillPatternType.solid,
-        horizontalAlign: horizontal,
-        verticalAlign: vertical,
-        leftBorder: left,
-        rightBorder: right,
-        topBorder: top,
-        bottomBorder: bottom,
-        numberFormat: numberFormat ?? NumFormat.standard_0,
-      );
+  }) => CellStyle(
+    fontFamily: _font,
+    fontSize: size,
+    bold: bold,
+    italic: italic,
+    fontColorHex: _c(fg),
+    backgroundColorHex: _c(bg),
+    fillPattern: FillPatternType.solid,
+    horizontalAlign: horizontal,
+    verticalAlign: vertical,
+    leftBorder: left,
+    rightBorder: right,
+    topBorder: top,
+    bottomBorder: bottom,
+    numberFormat: numberFormat ?? NumFormat.standard_0,
+  );
 
   void _text(Sheet sheet, String cell, String value, CellStyle style) {
     sheet.updateCell(
@@ -108,8 +107,9 @@ final class TimesheetWorkbookBuilder {
       );
     }
 
-    final included = month.days.where((day) => day.isEligibleForTimesheet).toList()
-      ..sort((a, b) => a.date.compareTo(b.date));
+    final included =
+        month.days.where((day) => day.isEligibleForTimesheet).toList()
+          ..sort((a, b) => a.date.compareTo(b.date));
     if (included.isEmpty) {
       throw StateError('Nenhum dia elegível para exportação.');
     }
@@ -138,10 +138,7 @@ final class TimesheetWorkbookBuilder {
     }
     sheet.setRowHeight(5, 28);
 
-    sheet.merge(
-      CellIndex.indexByString('A1'),
-      CellIndex.indexByString('G1'),
-    );
+    sheet.merge(CellIndex.indexByString('A1'), CellIndex.indexByString('G1'));
     _text(
       sheet,
       'A1',
@@ -231,14 +228,12 @@ final class TimesheetWorkbookBuilder {
       final day = included[dayIndex];
       sheet.setRowHeight(excelRow - 1, 18);
       final special = day.date.weekday >= DateTime.friday;
-      final bg = special
-          ? 'FFF2CC'
-          : (dayIndex.isEven ? 'EEF4FB' : 'FFFFFF');
+      final bg = special ? 'FFF2CC' : (dayIndex.isEven ? 'EEF4FB' : 'FFFFFF');
       final timeColor = day.workedMinutes < 480
           ? 'C00000'
           : day.workedMinutes > 480
-              ? '1E7145'
-              : '1F3864';
+          ? '1E7145'
+          : '1F3864';
       final base = _style(
         fg: '1F3864',
         bg: bg,

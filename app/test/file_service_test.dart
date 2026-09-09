@@ -16,19 +16,24 @@ void main() {
     expect(await first.readAsBytes(), [1, 2, 3]);
   });
 
-  test('atomic write fails closed if target appears and preserves it', () async {
-    final dir = await Directory.systemTemp.createTemp('horafolio_atomic_');
-    addTearDown(() => dir.delete(recursive: true));
-    final target = File('${dir.path}/timesheet.xlsx');
-    await target.writeAsBytes([9, 9, 9]);
-    await expectLater(
-      service.writeAtomically(target.path, [1, 2, 3]),
-      throwsStateError,
-    );
-    expect(await target.readAsBytes(), [9, 9, 9]);
-    expect(
-      dir.listSync().whereType<File>().where((file) => file.path.contains('.tmp.')),
-      isEmpty,
-    );
-  });
+  test(
+    'atomic write fails closed if target appears and preserves it',
+    () async {
+      final dir = await Directory.systemTemp.createTemp('horafolio_atomic_');
+      addTearDown(() => dir.delete(recursive: true));
+      final target = File('${dir.path}/timesheet.xlsx');
+      await target.writeAsBytes([9, 9, 9]);
+      await expectLater(
+        service.writeAtomically(target.path, [1, 2, 3]),
+        throwsStateError,
+      );
+      expect(await target.readAsBytes(), [9, 9, 9]);
+      expect(
+        dir.listSync().whereType<File>().where(
+          (file) => file.path.contains('.tmp.'),
+        ),
+        isEmpty,
+      );
+    },
+  );
 }

@@ -40,11 +40,11 @@ const monthsPtSlug = <int, String>{
   12: 'dezembro',
 };
 
-
 /// Converts a wall-clock date/time plus its captured UTC offset into UTC.
 /// This is used when editing historical punches so a later device timezone
 /// change does not silently reinterpret the original local time.
-DateTime wallClockToUtc(DateTime wallClock, int utcOffsetMinutes) => DateTime.utc(
+DateTime wallClockToUtc(DateTime wallClock, int utcOffsetMinutes) =>
+    DateTime.utc(
       wallClock.year,
       wallClock.month,
       wallClock.day,
@@ -57,19 +57,25 @@ DateTime wallClockToUtc(DateTime wallClock, int utcOffsetMinutes) => DateTime.ut
 
 String localDateKey(DateTime value) => DateFormat('yyyy-MM-dd').format(value);
 
-DateTime dateOnly(DateTime value) => DateTime(value.year, value.month, value.day);
+DateTime dateOnly(DateTime value) =>
+    DateTime(value.year, value.month, value.day);
 
 DateTime parseLocalDate(String value) {
   final parts = value.split('-');
   if (parts.length != 3) {
     throw FormatException('Data local inválida: $value');
   }
-  return DateTime(int.parse(parts[0]), int.parse(parts[1]), int.parse(parts[2]));
+  return DateTime(
+    int.parse(parts[0]),
+    int.parse(parts[1]),
+    int.parse(parts[2]),
+  );
 }
 
 String weekdayPt(DateTime date) => weekdaysPt[date.weekday]!;
 
-String monthYearPt(DateTime date) => '${monthsPtUpper[date.month]} ${date.year}';
+String monthYearPt(DateTime date) =>
+    '${monthsPtUpper[date.month]} ${date.year}';
 
 String defaultFilenameForMonth(DateTime date) =>
     'timesheet_${monthsPtSlug[date.month]}_${date.year}.xlsx';

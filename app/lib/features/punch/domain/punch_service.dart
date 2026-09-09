@@ -153,10 +153,11 @@ final class DefaultPunchService implements PunchService {
           'O horário corrigido cai em outra data local. Jornadas overnight exigem revisão explícita.',
         );
       }
-      final candidate = punches
-          .map((punch) => punch.id == edit.id ? replacement : punch)
-          .toList()
-        ..sort((a, b) => a.occurredAtUtc.compareTo(b.occurredAtUtc));
+      final candidate =
+          punches
+              .map((punch) => punch.id == edit.id ? replacement : punch)
+              .toList()
+            ..sort((a, b) => a.occurredAtUtc.compareTo(b.occurredAtUtc));
       final issues = sequenceValidator.validate(candidate);
       if (issues.any((issue) => issue.blocking)) {
         throw StateError(issues.first.message);

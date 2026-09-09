@@ -10,7 +10,8 @@ part 'app_database.g.dart';
 @DataClassName('WorkDayRow')
 class WorkDays extends Table {
   TextColumn get localDate => text()();
-  BoolColumn get includeInTimesheet => boolean().withDefault(const Constant(true))();
+  BoolColumn get includeInTimesheet =>
+      boolean().withDefault(const Constant(true))();
   TextColumn get activity => text().nullable()();
   TextColumn get note => text().nullable()();
   IntColumn get createdAtUtcMs => integer()();
@@ -66,7 +67,9 @@ class Reminders extends Table {
   BoolColumn get enabled => boolean().withDefault(const Constant(true))();
 }
 
-@DriftDatabase(tables: [WorkDays, Punches, PunchAudit, ProfileSettings, Reminders])
+@DriftDatabase(
+  tables: [WorkDays, Punches, PunchAudit, ProfileSettings, Reminders],
+)
 class AppDatabase extends _$AppDatabase {
   AppDatabase({QueryExecutor? executor}) : super(executor ?? _openConnection());
 
@@ -75,29 +78,28 @@ class AppDatabase extends _$AppDatabase {
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
-        onCreate: (m) async {
-          await m.createAll();
-          await customStatement(
-            'CREATE INDEX idx_punches_local_date_time '
-            'ON punches(local_date, occurred_at_utc_ms)',
-          );
-          await customStatement(
-            'CREATE INDEX idx_punch_audit_punch '
-            'ON punch_audit(punch_id, changed_at_utc_ms)',
-          );
-          await _ensureIntegrityGuards();
-        },
-        onUpgrade: (m, from, to) async {
-          if (from != to) {
-            throw StateError('Migration não implementada: $from -> $to');
-          }
-        },
-        beforeOpen: (details) async {
-          await customStatement('PRAGMA foreign_keys = ON');
-          await _ensureIntegrityGuards();
-        },
+    onCreate: (m) async {
+      await m.createAll();
+      await customStatement(
+        'CREATE INDEX idx_punches_local_date_time '
+        'ON punches(local_date, occurred_at_utc_ms)',
       );
-
+      await customStatement(
+        'CREATE INDEX idx_punch_audit_punch '
+        'ON punch_audit(punch_id, changed_at_utc_ms)',
+      );
+      await _ensureIntegrityGuards();
+    },
+    onUpgrade: (m, from, to) async {
+      if (from != to) {
+        throw StateError('Migration não implementada: $from -> $to');
+      }
+    },
+    beforeOpen: (details) async {
+      await customStatement('PRAGMA foreign_keys = ON');
+      await _ensureIntegrityGuards();
+    },
+  );
 
   Future<void> _ensureIntegrityGuards() async {
     await customStatement(

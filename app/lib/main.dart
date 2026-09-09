@@ -13,9 +13,5 @@ Future<void> main() async {
     debugPrint('Falha ao inicializar lembretes locais: $error');
     debugPrintStack(stackTrace: stackTrace);
   }
-  runApp(
-    const ProviderScope(
-      child: ReminderReconciler(child: HoraFolioApp()),
-    ),
-  );
+  runApp(const ProviderScope(child: ReminderReconciler(child: HoraFolioApp())));
 }
