@@ -49,6 +49,12 @@ final class DriftPunchRepository implements PunchRepository {
 
   final AppDatabase db;
 
+  @override
+  Future<T> transaction<T>(
+    Future<T> Function(PunchRepository repository) action,
+  ) =>
+      db.transaction(() => action(this));
+
   Selectable<PunchRow> _activeDayQuery(String key) {
     return (db.select(db.punches)
           ..where((row) => row.localDate.equals(key) & row.deletedAtUtcMs.isNull())

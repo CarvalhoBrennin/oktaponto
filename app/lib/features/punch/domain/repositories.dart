@@ -2,6 +2,7 @@ import '../../reminders/domain/reminder.dart';
 import 'models.dart';
 
 abstract interface class PunchRepository {
+  Future<T> transaction<T>(Future<T> Function(PunchRepository repository) action);
   Stream<List<Punch>> watchDay(DateTime localDate);
   Stream<List<Punch>> watchMonth(int year, int month);
   Future<List<Punch>> listDay(DateTime localDate);

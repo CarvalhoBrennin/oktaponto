@@ -12,6 +12,12 @@ class FakePunchRepository implements PunchRepository {
   Duration insertDelay = Duration.zero;
 
   @override
+  Future<T> transaction<T>(
+    Future<T> Function(PunchRepository repository) action,
+  ) =>
+      action(this);
+
+  @override
   Future<Punch> insert(PunchDraft draft) async {
     if (insertDelay > Duration.zero) await Future<void>.delayed(insertDelay);
     final item = Punch(id: _id++, occurredAtUtc: draft.occurredAtUtc, localDate: draft.localDate, utcOffsetMinutes: draft.utcOffsetMinutes, kind: draft.kind, isEdited: draft.isEdited);
@@ -135,6 +141,62 @@ void main() {
       ),
       throwsStateError,
     );
+  });
+
+  test('editing cannot make a punch reconstruct to another local date', () async {
+    final repo = FakePunchRepository();
+    repo.items.add(
+      Punch(
+        id: 1,
+        occurredAtUtc: DateTime.utc(2026, 9, 1, 8),
+        localDate: '2026-09-01',
+        utcOffsetMinutes: 0,
+        kind: PunchKind.in_,
+        isEdited: false,
+      ),
+    );
+    final service = DefaultPunchService(repository: repo);
+    await expectLater(
+      service.editPunch(
+        PunchEdit(
+          id: 1,
+          localDate: '2026-09-01',
+          occurredAtUtc: DateTime.utc(2026, 9, 2, 0, 30),
+          utcOffsetMinutes: 0,
+          kind: PunchKind.in_,
+        ),
+      ),
+      throwsStateError,
+    );
+    expect(repo.items.single.occurredAtUtc, DateTime.utc(2026, 9, 1, 8));
+  });
+
+  test('editing cannot move a punch to another work day', () async {
+    final repo = FakePunchRepository();
+    repo.items.add(
+      Punch(
+        id: 1,
+        occurredAtUtc: DateTime.utc(2026, 9, 1, 8),
+        localDate: '2026-09-01',
+        utcOffsetMinutes: 0,
+        kind: PunchKind.in_,
+        isEdited: false,
+      ),
+    );
+    final service = DefaultPunchService(repository: repo);
+    await expectLater(
+      service.editPunch(
+        PunchEdit(
+          id: 1,
+          localDate: '2026-09-02',
+          occurredAtUtc: DateTime.utc(2026, 9, 2, 8),
+          utcOffsetMinutes: 0,
+          kind: PunchKind.in_,
+        ),
+      ),
+      throwsStateError,
+    );
+    expect(repo.items.single.localDate, '2026-09-01');
   });
 
   test('double submit is rejected while first insert is in flight', () async {
