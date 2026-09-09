@@ -20,6 +20,9 @@ python scripts/compare_xlsx_contract.py \
   app/test/goldens/xlsx/reference_contract.json \
   app/build/reference_current.json
 
+echo '== SQLite schema v1 contract =='
+python scripts/validate_schema_snapshot.py app/drift_schemas/schema_v1.sql
+
 if ! command -v flutter >/dev/null 2>&1 || ! command -v dart >/dev/null 2>&1; then
   echo 'Gates Python concluídos. Flutter/Dart não encontrados; gates móveis não executados.' >&2
   exit 127
