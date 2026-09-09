@@ -15,7 +15,14 @@ class MonthScreen extends ConsumerStatefulWidget {
 }
 
 class _MonthScreenState extends ConsumerState<MonthScreen> {
-  late DateTime _month = DateTime(DateTime.now().year, DateTime.now().month);
+  late DateTime _month;
+
+  @override
+  void initState() {
+    super.initState();
+    final now = ref.read(clockProvider).now();
+    _month = DateTime(now.year, now.month);
+  }
   var _busy = false;
   TimesheetGenerationResult? _lastExport;
   String? _error;

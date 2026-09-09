@@ -52,7 +52,7 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final today = dateOnly(DateTime.now());
+    final today = dateOnly(ref.watch(clockProvider).now());
     final summary = ref.watch(daySummaryProvider(today));
     return Scaffold(
       appBar: AppBar(title: const Text('Hoje')),

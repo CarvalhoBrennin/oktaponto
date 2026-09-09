@@ -15,10 +15,12 @@ final class DataResetService {
   final SettingsRepository settings;
   final ReminderRepository reminders;
 
-  Future<void> clearAll() async {
-    await punches.clearAll();
-    await workDays.clearAll();
-    await settings.clearAll();
-    await reminders.clearAll();
+  Future<void> clearAll() {
+    return punches.transaction((_) async {
+      await punches.clearAll();
+      await workDays.clearAll();
+      await settings.clearAll();
+      await reminders.clearAll();
+    });
   }
 }

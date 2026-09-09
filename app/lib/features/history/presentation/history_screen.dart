@@ -14,7 +14,14 @@ class HistoryScreen extends ConsumerStatefulWidget {
 }
 
 class _HistoryScreenState extends ConsumerState<HistoryScreen> {
-  late DateTime _month = DateTime(DateTime.now().year, DateTime.now().month);
+  late DateTime _month;
+
+  @override
+  void initState() {
+    super.initState();
+    final now = ref.read(clockProvider).now();
+    _month = DateTime(now.year, now.month);
+  }
 
   void _move(int delta) {
     setState(() => _month = DateTime(_month.year, _month.month + delta));
