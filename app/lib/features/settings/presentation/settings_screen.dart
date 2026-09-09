@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/theme/theme_provider.dart';
 import '../../../providers/app_providers.dart';
 import '../../punch/domain/models.dart';
 import '../../reminders/domain/reminder.dart';
@@ -58,16 +59,18 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   void _showError(Object error) {
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(_friendlyError(error))),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(_friendlyError(error))));
   }
 
   Future<void> _saveProfile() async {
     if (_saving) return;
     setState(() => _saving = true);
     try {
-      await ref.read(settingsRepositoryProvider).saveProfile(
+      await ref
+          .read(settingsRepositoryProvider)
+          .saveProfile(
             ProfileSettingsModel(
               employeeName: _name.text.trim(),
               jobTitle: _job.text.trim(),
@@ -77,9 +80,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           );
       ref.invalidate(profileProvider);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Perfil salvo.')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Perfil salvo.')));
       }
     } catch (error) {
       _showError(error);
@@ -88,9 +91,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     }
   }
 
-  Future<void> _restoreReminderSchedule(
-    List<ReminderConfig> previous,
-  ) async {
+  Future<void> _restoreReminderSchedule(List<ReminderConfig> previous) async {
     try {
       await ref.read(notificationServiceProvider).rescheduleAll(previous);
     } catch (_) {
@@ -179,16 +180,16 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               onPressed: mask == 0 || label.text.trim().isEmpty
                   ? null
                   : () => Navigator.pop(
-                        context,
-                        ReminderConfig(
-                          id: existing?.id ?? 0,
-                          label: label.text.trim(),
-                          hour: time.hour,
-                          minute: time.minute,
-                          weekdaysMask: mask,
-                          enabled: enabled,
-                        ),
+                      context,
+                      ReminderConfig(
+                        id: existing?.id ?? 0,
+                        label: label.text.trim(),
+                        hour: time.hour,
+                        minute: time.minute,
+                        weekdaysMask: mask,
+                        enabled: enabled,
                       ),
+                    ),
               child: const Text('Salvar'),
             ),
           ],
@@ -273,7 +274,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   Future<void> _clearAll() async {
     if (_resetBusy) return;
-    final confirmed = await showDialog<bool>(
+    final confirmed =
+        await showDialog<bool>(
           context: context,
           builder: (context) => AlertDialog(
             title: const Text('Apagar todos os dados?'),
@@ -328,12 +330,123 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   Widget build(BuildContext context) {
     final profile = ref.watch(profileProvider);
     final reminders = ref.watch(remindersProvider);
+    final themeMode = ref.watch(themeModeProvider);
     profile.whenData(_scheduleHydrate);
     return Scaffold(
       appBar: AppBar(title: const Text('Configurações')),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          Text('Aparência', style: Theme.of(context).textTheme.titleLarge),
+          const SizedBox(height: 8),
+          const Text(
+            'Escolha como o HoraFólio se apresenta. O modo escuro foi '
+            'projetado com contraste AA, superfícies em navy profundo e '
+            'componentes Material 3 para conforto em baixa luz.',
+          ),
+          const SizedBox(height: 12),
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        themeModeIcon(themeMode),
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Tema',
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
+                            Text(
+                              themeModeLabel(themeMode),
+                              style: Theme.of(context).textTheme.bodySmall
+                                  ?.copyWith(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurfaceVariant,
+                                  ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  SegmentedButton<ThemeMode>(
+                    segments: const [
+                      ButtonSegment(
+                        value: ThemeMode.system,
+                        label: Text('Auto'),
+                        icon: Icon(Icons.brightness_auto_outlined),
+                      ),
+                      ButtonSegment(
+                        value: ThemeMode.light,
+                        label: Text('Claro'),
+                        icon: Icon(Icons.light_mode_outlined),
+                      ),
+                      ButtonSegment(
+                        value: ThemeMode.dark,
+                        label: Text('Escuro'),
+                        icon: Icon(Icons.dark_mode_outlined),
+                      ),
+                    ],
+                    selected: {themeMode},
+                    onSelectionChanged: (selection) async {
+                      if (selection.isNotEmpty) {
+                        try {
+                          await ref
+                              .read(themeModeProvider.notifier)
+                              .setMode(selection.first);
+                        } catch (error) {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Falha ao salvar tema: $error'),
+                              ),
+                            );
+                          }
+                        }
+                      }
+                    },
+                    showSelectedIcon: false,
+                    style: ButtonStyle(
+                      visualDensity: VisualDensity.compact,
+                      side: WidgetStatePropertyAll(
+                        BorderSide(
+                          color: Theme.of(context).colorScheme.outlineVariant,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    themeMode == ThemeMode.dark
+                        ? 'Escuro 100% ativo: paleta M3 tonal dark, '
+                              'superfícies navy derivadas do seed e navegação '
+                              'com indicador secondaryContainer.'
+                        : themeMode == ThemeMode.light
+                        ? 'Claro preservado: seed 0xFF1F3864 original, '
+                              'cards elevados e fundo surface.'
+                        : 'Automático: segue o sistema (claro/escuro) e '
+                              'persiste sua escolha.',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const Divider(height: 40),
           Text(
             'Perfil do timesheet',
             style: Theme.of(context).textTheme.titleLarge,
@@ -404,8 +517,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     ),
                     onTap: _reminderBusy ? null : () => _editReminder(item),
                     trailing: IconButton(
-                      onPressed:
-                          _reminderBusy ? null : () => _deleteReminder(item),
+                      onPressed: _reminderBusy
+                          ? null
+                          : () => _deleteReminder(item),
                       icon: const Icon(Icons.delete_outline),
                     ),
                   ),
