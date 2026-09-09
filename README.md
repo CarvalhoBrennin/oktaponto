@@ -40,7 +40,7 @@ cd app
 dart format --output=none --set-exit-if-changed .
 flutter analyze
 flutter test --coverage
-flutter test integration_test
+flutter test integration_test -d <device-id>
 ```
 
 Legado:
@@ -48,6 +48,13 @@ Legado:
 ```bash
 cd legacy/python_reference
 python -m unittest discover -s tests
+```
+
+Goldens de UI (primeira renderização/atualização dos baselines):
+
+```bash
+cd app
+./tool/update_goldens.sh
 ```
 
 ## Build
