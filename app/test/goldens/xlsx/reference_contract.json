@@ -1,0 +1,1909 @@
+{
+  "sheet_order": [
+    "Planilha1"
+  ],
+  "sheets": [
+    {
+      "cells": [
+        {
+          "alignment": {
+            "horizontal": "center",
+            "vertical": "center",
+            "wrap_text": false
+          },
+          "border": {
+            "bottom": null,
+            "left": null,
+            "right": null,
+            "top": null
+          },
+          "coordinate": "A1",
+          "data_type": "s",
+          "fill": {
+            "fg": "1F3864",
+            "type": "solid"
+          },
+          "font": {
+            "bold": true,
+            "color": "FFFFFF",
+            "italic": false,
+            "name": "Segoe UI",
+            "size": 16.0
+          },
+          "number_format": "General",
+          "value": "⏱  TIMESHEET — SETEMBRO 2026"
+        },
+        {
+          "alignment": {
+            "horizontal": "center",
+            "vertical": "center",
+            "wrap_text": false
+          },
+          "border": {
+            "bottom": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "left": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "right": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "top": {
+              "color": "C8D8EC",
+              "style": "thin"
+            }
+          },
+          "coordinate": "A10",
+          "data_type": "d",
+          "fill": {
+            "fg": "FFFFFF",
+            "type": "solid"
+          },
+          "font": {
+            "bold": false,
+            "color": "1F3864",
+            "italic": false,
+            "name": "Segoe UI",
+            "size": 10.0
+          },
+          "number_format": "DD/MM/YYYY",
+          "value": {
+            "kind": "datetime",
+            "value": "2026-09-07T00:00:00"
+          }
+        },
+        {
+          "alignment": {
+            "horizontal": "center",
+            "vertical": "center",
+            "wrap_text": false
+          },
+          "border": {
+            "bottom": {
+              "color": "1A5C9E",
+              "style": "thin"
+            },
+            "left": {
+              "color": "1A5C9E",
+              "style": "thin"
+            },
+            "right": {
+              "color": "1A5C9E",
+              "style": "thin"
+            },
+            "top": {
+              "color": "1A5C9E",
+              "style": "thin"
+            }
+          },
+          "coordinate": "A12",
+          "data_type": "s",
+          "fill": {
+            "fg": "1F3864",
+            "type": "solid"
+          },
+          "font": {
+            "bold": true,
+            "color": "FFFFFF",
+            "italic": false,
+            "name": "Segoe UI",
+            "size": 11.0
+          },
+          "number_format": "General",
+          "value": "TOTAL DE HORAS"
+        },
+        {
+          "alignment": {
+            "horizontal": "left",
+            "vertical": "center",
+            "wrap_text": false
+          },
+          "border": {
+            "bottom": null,
+            "left": null,
+            "right": null,
+            "top": null
+          },
+          "coordinate": "A14",
+          "data_type": "s",
+          "fill": {
+            "fg": null,
+            "type": null
+          },
+          "font": {
+            "bold": false,
+            "color": "888888",
+            "italic": true,
+            "name": "Segoe UI",
+            "size": 8.0
+          },
+          "number_format": "General",
+          "value": "🟢 > 8h  |  🔴 < 8h  |  🔵 = 8h  |  🟡 Sexta / fim de semana"
+        },
+        {
+          "alignment": {
+            "horizontal": "left",
+            "vertical": "center",
+            "wrap_text": false
+          },
+          "border": {
+            "bottom": null,
+            "left": {
+              "color": "2E75B6",
+              "style": "medium"
+            },
+            "right": null,
+            "top": null
+          },
+          "coordinate": "A2",
+          "data_type": "s",
+          "fill": {
+            "fg": "EEF4FB",
+            "type": "solid"
+          },
+          "font": {
+            "bold": true,
+            "color": "2E75B6",
+            "italic": false,
+            "name": "Segoe UI",
+            "size": 9.0
+          },
+          "number_format": "General",
+          "value": "COLABORADOR"
+        },
+        {
+          "alignment": {
+            "horizontal": "left",
+            "vertical": "center",
+            "wrap_text": false
+          },
+          "border": {
+            "bottom": null,
+            "left": {
+              "color": "2E75B6",
+              "style": "medium"
+            },
+            "right": null,
+            "top": null
+          },
+          "coordinate": "A3",
+          "data_type": "s",
+          "fill": {
+            "fg": "EEF4FB",
+            "type": "solid"
+          },
+          "font": {
+            "bold": true,
+            "color": "2E75B6",
+            "italic": false,
+            "name": "Segoe UI",
+            "size": 9.0
+          },
+          "number_format": "General",
+          "value": "CARGO"
+        },
+        {
+          "alignment": {
+            "horizontal": "left",
+            "vertical": "center",
+            "wrap_text": false
+          },
+          "border": {
+            "bottom": null,
+            "left": {
+              "color": "2E75B6",
+              "style": "medium"
+            },
+            "right": null,
+            "top": null
+          },
+          "coordinate": "A4",
+          "data_type": "s",
+          "fill": {
+            "fg": "EEF4FB",
+            "type": "solid"
+          },
+          "font": {
+            "bold": true,
+            "color": "2E75B6",
+            "italic": false,
+            "name": "Segoe UI",
+            "size": 9.0
+          },
+          "number_format": "General",
+          "value": "PERÍODO"
+        },
+        {
+          "alignment": {
+            "horizontal": "center",
+            "vertical": "center",
+            "wrap_text": false
+          },
+          "border": {
+            "bottom": {
+              "color": "1A5C9E",
+              "style": "thin"
+            },
+            "left": {
+              "color": "1A5C9E",
+              "style": "thin"
+            },
+            "right": {
+              "color": "1A5C9E",
+              "style": "thin"
+            },
+            "top": {
+              "color": "1A5C9E",
+              "style": "thin"
+            }
+          },
+          "coordinate": "A6",
+          "data_type": "s",
+          "fill": {
+            "fg": "2E75B6",
+            "type": "solid"
+          },
+          "font": {
+            "bold": true,
+            "color": "FFFFFF",
+            "italic": false,
+            "name": "Segoe UI",
+            "size": 10.0
+          },
+          "number_format": "General",
+          "value": "Data"
+        },
+        {
+          "alignment": {
+            "horizontal": "center",
+            "vertical": "center",
+            "wrap_text": false
+          },
+          "border": {
+            "bottom": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "left": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "right": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "top": {
+              "color": "C8D8EC",
+              "style": "thin"
+            }
+          },
+          "coordinate": "A7",
+          "data_type": "d",
+          "fill": {
+            "fg": "EEF4FB",
+            "type": "solid"
+          },
+          "font": {
+            "bold": false,
+            "color": "1F3864",
+            "italic": false,
+            "name": "Segoe UI",
+            "size": 10.0
+          },
+          "number_format": "DD/MM/YYYY",
+          "value": {
+            "kind": "datetime",
+            "value": "2026-09-01T00:00:00"
+          }
+        },
+        {
+          "alignment": {
+            "horizontal": "center",
+            "vertical": "center",
+            "wrap_text": false
+          },
+          "border": {
+            "bottom": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "left": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "right": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "top": {
+              "color": "C8D8EC",
+              "style": "thin"
+            }
+          },
+          "coordinate": "A8",
+          "data_type": "d",
+          "fill": {
+            "fg": "FFF2CC",
+            "type": "solid"
+          },
+          "font": {
+            "bold": false,
+            "color": "1F3864",
+            "italic": false,
+            "name": "Segoe UI",
+            "size": 10.0
+          },
+          "number_format": "DD/MM/YYYY",
+          "value": {
+            "kind": "datetime",
+            "value": "2026-09-04T00:00:00"
+          }
+        },
+        {
+          "alignment": {
+            "horizontal": "center",
+            "vertical": "center",
+            "wrap_text": false
+          },
+          "border": {
+            "bottom": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "left": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "right": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "top": {
+              "color": "C8D8EC",
+              "style": "thin"
+            }
+          },
+          "coordinate": "A9",
+          "data_type": "d",
+          "fill": {
+            "fg": "FFF2CC",
+            "type": "solid"
+          },
+          "font": {
+            "bold": false,
+            "color": "1F3864",
+            "italic": false,
+            "name": "Segoe UI",
+            "size": 10.0
+          },
+          "number_format": "DD/MM/YYYY",
+          "value": {
+            "kind": "datetime",
+            "value": "2026-09-06T00:00:00"
+          }
+        },
+        {
+          "alignment": {
+            "horizontal": "left",
+            "vertical": "center",
+            "wrap_text": false
+          },
+          "border": {
+            "bottom": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "left": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "right": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "top": {
+              "color": "C8D8EC",
+              "style": "thin"
+            }
+          },
+          "coordinate": "B10",
+          "data_type": "s",
+          "fill": {
+            "fg": "FFFFFF",
+            "type": "solid"
+          },
+          "font": {
+            "bold": false,
+            "color": "1F3864",
+            "italic": false,
+            "name": "Segoe UI",
+            "size": 10.0
+          },
+          "number_format": "General",
+          "value": "Segunda-feira"
+        },
+        {
+          "alignment": {
+            "horizontal": "center",
+            "vertical": "center",
+            "wrap_text": false
+          },
+          "border": {
+            "bottom": {
+              "color": "1A5C9E",
+              "style": "thin"
+            },
+            "left": {
+              "color": "1A5C9E",
+              "style": "thin"
+            },
+            "right": {
+              "color": "1A5C9E",
+              "style": "thin"
+            },
+            "top": {
+              "color": "1A5C9E",
+              "style": "thin"
+            }
+          },
+          "coordinate": "B6",
+          "data_type": "s",
+          "fill": {
+            "fg": "2E75B6",
+            "type": "solid"
+          },
+          "font": {
+            "bold": true,
+            "color": "FFFFFF",
+            "italic": false,
+            "name": "Segoe UI",
+            "size": 10.0
+          },
+          "number_format": "General",
+          "value": "Dia da Semana"
+        },
+        {
+          "alignment": {
+            "horizontal": "left",
+            "vertical": "center",
+            "wrap_text": false
+          },
+          "border": {
+            "bottom": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "left": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "right": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "top": {
+              "color": "C8D8EC",
+              "style": "thin"
+            }
+          },
+          "coordinate": "B7",
+          "data_type": "s",
+          "fill": {
+            "fg": "EEF4FB",
+            "type": "solid"
+          },
+          "font": {
+            "bold": false,
+            "color": "1F3864",
+            "italic": false,
+            "name": "Segoe UI",
+            "size": 10.0
+          },
+          "number_format": "General",
+          "value": "Terça-feira"
+        },
+        {
+          "alignment": {
+            "horizontal": "left",
+            "vertical": "center",
+            "wrap_text": false
+          },
+          "border": {
+            "bottom": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "left": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "right": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "top": {
+              "color": "C8D8EC",
+              "style": "thin"
+            }
+          },
+          "coordinate": "B8",
+          "data_type": "s",
+          "fill": {
+            "fg": "FFF2CC",
+            "type": "solid"
+          },
+          "font": {
+            "bold": false,
+            "color": "1F3864",
+            "italic": false,
+            "name": "Segoe UI",
+            "size": 10.0
+          },
+          "number_format": "General",
+          "value": "Sexta-feira"
+        },
+        {
+          "alignment": {
+            "horizontal": "left",
+            "vertical": "center",
+            "wrap_text": false
+          },
+          "border": {
+            "bottom": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "left": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "right": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "top": {
+              "color": "C8D8EC",
+              "style": "thin"
+            }
+          },
+          "coordinate": "B9",
+          "data_type": "s",
+          "fill": {
+            "fg": "FFF2CC",
+            "type": "solid"
+          },
+          "font": {
+            "bold": false,
+            "color": "1F3864",
+            "italic": false,
+            "name": "Segoe UI",
+            "size": 10.0
+          },
+          "number_format": "General",
+          "value": "Domingo"
+        },
+        {
+          "alignment": {
+            "horizontal": "center",
+            "vertical": "center",
+            "wrap_text": false
+          },
+          "border": {
+            "bottom": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "left": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "right": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "top": {
+              "color": "C8D8EC",
+              "style": "thin"
+            }
+          },
+          "coordinate": "C10",
+          "data_type": "d",
+          "fill": {
+            "fg": "FFFFFF",
+            "type": "solid"
+          },
+          "font": {
+            "bold": true,
+            "color": "1E7145",
+            "italic": false,
+            "name": "Segoe UI",
+            "size": 10.0
+          },
+          "number_format": "[h]:mm",
+          "value": {
+            "kind": "duration_seconds",
+            "value": 86400.0
+          }
+        },
+        {
+          "alignment": {
+            "horizontal": "center",
+            "vertical": "center",
+            "wrap_text": false
+          },
+          "border": {
+            "bottom": {
+              "color": "1A5C9E",
+              "style": "thin"
+            },
+            "left": {
+              "color": "1A5C9E",
+              "style": "thin"
+            },
+            "right": {
+              "color": "1A5C9E",
+              "style": "thin"
+            },
+            "top": {
+              "color": "1A5C9E",
+              "style": "thin"
+            }
+          },
+          "coordinate": "C12",
+          "data_type": "d",
+          "fill": {
+            "fg": "1F3864",
+            "type": "solid"
+          },
+          "font": {
+            "bold": true,
+            "color": "FFFFFF",
+            "italic": false,
+            "name": "Segoe UI",
+            "size": 14.0
+          },
+          "number_format": "[h]:mm",
+          "value": {
+            "kind": "duration_seconds",
+            "value": 172800.0
+          }
+        },
+        {
+          "alignment": {
+            "horizontal": "left",
+            "vertical": "center",
+            "wrap_text": false
+          },
+          "border": {
+            "bottom": null,
+            "left": null,
+            "right": null,
+            "top": null
+          },
+          "coordinate": "C2",
+          "data_type": "s",
+          "fill": {
+            "fg": "EEF4FB",
+            "type": "solid"
+          },
+          "font": {
+            "bold": false,
+            "color": "1F3864",
+            "italic": false,
+            "name": "Segoe UI",
+            "size": 10.0
+          },
+          "number_format": "General",
+          "value": "=COLABORADOR TESTE"
+        },
+        {
+          "alignment": {
+            "horizontal": "left",
+            "vertical": "center",
+            "wrap_text": false
+          },
+          "border": {
+            "bottom": null,
+            "left": null,
+            "right": null,
+            "top": null
+          },
+          "coordinate": "C3",
+          "data_type": "s",
+          "fill": {
+            "fg": "EEF4FB",
+            "type": "solid"
+          },
+          "font": {
+            "bold": false,
+            "color": "1F3864",
+            "italic": false,
+            "name": "Segoe UI",
+            "size": 10.0
+          },
+          "number_format": "General",
+          "value": "Desenvolvedor Sênior"
+        },
+        {
+          "alignment": {
+            "horizontal": "left",
+            "vertical": "center",
+            "wrap_text": false
+          },
+          "border": {
+            "bottom": null,
+            "left": null,
+            "right": null,
+            "top": null
+          },
+          "coordinate": "C4",
+          "data_type": "s",
+          "fill": {
+            "fg": "EEF4FB",
+            "type": "solid"
+          },
+          "font": {
+            "bold": false,
+            "color": "1F3864",
+            "italic": false,
+            "name": "Segoe UI",
+            "size": 10.0
+          },
+          "number_format": "General",
+          "value": "01/09/2026  →  30/09/2026"
+        },
+        {
+          "alignment": {
+            "horizontal": "center",
+            "vertical": "center",
+            "wrap_text": false
+          },
+          "border": {
+            "bottom": {
+              "color": "1A5C9E",
+              "style": "thin"
+            },
+            "left": {
+              "color": "1A5C9E",
+              "style": "thin"
+            },
+            "right": {
+              "color": "1A5C9E",
+              "style": "thin"
+            },
+            "top": {
+              "color": "1A5C9E",
+              "style": "thin"
+            }
+          },
+          "coordinate": "C6",
+          "data_type": "s",
+          "fill": {
+            "fg": "2E75B6",
+            "type": "solid"
+          },
+          "font": {
+            "bold": true,
+            "color": "FFFFFF",
+            "italic": false,
+            "name": "Segoe UI",
+            "size": 10.0
+          },
+          "number_format": "General",
+          "value": "Horas Trabalhadas"
+        },
+        {
+          "alignment": {
+            "horizontal": "center",
+            "vertical": "center",
+            "wrap_text": false
+          },
+          "border": {
+            "bottom": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "left": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "right": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "top": {
+              "color": "C8D8EC",
+              "style": "thin"
+            }
+          },
+          "coordinate": "C7",
+          "data_type": "d",
+          "fill": {
+            "fg": "EEF4FB",
+            "type": "solid"
+          },
+          "font": {
+            "bold": true,
+            "color": "1F3864",
+            "italic": false,
+            "name": "Segoe UI",
+            "size": 10.0
+          },
+          "number_format": "[h]:mm",
+          "value": {
+            "kind": "duration_seconds",
+            "value": 28800.0
+          }
+        },
+        {
+          "alignment": {
+            "horizontal": "center",
+            "vertical": "center",
+            "wrap_text": false
+          },
+          "border": {
+            "bottom": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "left": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "right": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "top": {
+              "color": "C8D8EC",
+              "style": "thin"
+            }
+          },
+          "coordinate": "C8",
+          "data_type": "d",
+          "fill": {
+            "fg": "FFF2CC",
+            "type": "solid"
+          },
+          "font": {
+            "bold": true,
+            "color": "C00000",
+            "italic": false,
+            "name": "Segoe UI",
+            "size": 10.0
+          },
+          "number_format": "[h]:mm",
+          "value": {
+            "kind": "duration_seconds",
+            "value": 28740.0
+          }
+        },
+        {
+          "alignment": {
+            "horizontal": "center",
+            "vertical": "center",
+            "wrap_text": false
+          },
+          "border": {
+            "bottom": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "left": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "right": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "top": {
+              "color": "C8D8EC",
+              "style": "thin"
+            }
+          },
+          "coordinate": "C9",
+          "data_type": "d",
+          "fill": {
+            "fg": "FFF2CC",
+            "type": "solid"
+          },
+          "font": {
+            "bold": true,
+            "color": "1E7145",
+            "italic": false,
+            "name": "Segoe UI",
+            "size": 10.0
+          },
+          "number_format": "[h]:mm",
+          "value": {
+            "kind": "duration_seconds",
+            "value": 28860.0
+          }
+        },
+        {
+          "alignment": {
+            "horizontal": "left",
+            "vertical": "center",
+            "wrap_text": false
+          },
+          "border": {
+            "bottom": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "left": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "right": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "top": {
+              "color": "C8D8EC",
+              "style": "thin"
+            }
+          },
+          "coordinate": "D10",
+          "data_type": "s",
+          "fill": {
+            "fg": "FFFFFF",
+            "type": "solid"
+          },
+          "font": {
+            "bold": false,
+            "color": "1F3864",
+            "italic": false,
+            "name": "Segoe UI",
+            "size": 10.0
+          },
+          "number_format": "General",
+          "value": "=COLABORADOR TESTE"
+        },
+        {
+          "alignment": null,
+          "border": {
+            "bottom": {
+              "color": "1A5C9E",
+              "style": "thin"
+            },
+            "left": {
+              "color": "1A5C9E",
+              "style": "thin"
+            },
+            "right": {
+              "color": "1A5C9E",
+              "style": "thin"
+            },
+            "top": {
+              "color": "1A5C9E",
+              "style": "thin"
+            }
+          },
+          "coordinate": "D12",
+          "data_type": "n",
+          "fill": {
+            "fg": "1F3864",
+            "type": "solid"
+          },
+          "font": null,
+          "number_format": "General",
+          "value": null
+        },
+        {
+          "alignment": {
+            "horizontal": "center",
+            "vertical": "center",
+            "wrap_text": false
+          },
+          "border": {
+            "bottom": {
+              "color": "1A5C9E",
+              "style": "thin"
+            },
+            "left": {
+              "color": "1A5C9E",
+              "style": "thin"
+            },
+            "right": {
+              "color": "1A5C9E",
+              "style": "thin"
+            },
+            "top": {
+              "color": "1A5C9E",
+              "style": "thin"
+            }
+          },
+          "coordinate": "D6",
+          "data_type": "s",
+          "fill": {
+            "fg": "2E75B6",
+            "type": "solid"
+          },
+          "font": {
+            "bold": true,
+            "color": "FFFFFF",
+            "italic": false,
+            "name": "Segoe UI",
+            "size": 10.0
+          },
+          "number_format": "General",
+          "value": "Colaborador"
+        },
+        {
+          "alignment": {
+            "horizontal": "left",
+            "vertical": "center",
+            "wrap_text": false
+          },
+          "border": {
+            "bottom": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "left": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "right": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "top": {
+              "color": "C8D8EC",
+              "style": "thin"
+            }
+          },
+          "coordinate": "D7",
+          "data_type": "s",
+          "fill": {
+            "fg": "EEF4FB",
+            "type": "solid"
+          },
+          "font": {
+            "bold": false,
+            "color": "1F3864",
+            "italic": false,
+            "name": "Segoe UI",
+            "size": 10.0
+          },
+          "number_format": "General",
+          "value": "=COLABORADOR TESTE"
+        },
+        {
+          "alignment": {
+            "horizontal": "left",
+            "vertical": "center",
+            "wrap_text": false
+          },
+          "border": {
+            "bottom": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "left": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "right": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "top": {
+              "color": "C8D8EC",
+              "style": "thin"
+            }
+          },
+          "coordinate": "D8",
+          "data_type": "s",
+          "fill": {
+            "fg": "FFF2CC",
+            "type": "solid"
+          },
+          "font": {
+            "bold": false,
+            "color": "1F3864",
+            "italic": false,
+            "name": "Segoe UI",
+            "size": 10.0
+          },
+          "number_format": "General",
+          "value": "=COLABORADOR TESTE"
+        },
+        {
+          "alignment": {
+            "horizontal": "left",
+            "vertical": "center",
+            "wrap_text": false
+          },
+          "border": {
+            "bottom": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "left": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "right": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "top": {
+              "color": "C8D8EC",
+              "style": "thin"
+            }
+          },
+          "coordinate": "D9",
+          "data_type": "s",
+          "fill": {
+            "fg": "FFF2CC",
+            "type": "solid"
+          },
+          "font": {
+            "bold": false,
+            "color": "1F3864",
+            "italic": false,
+            "name": "Segoe UI",
+            "size": 10.0
+          },
+          "number_format": "General",
+          "value": "=COLABORADOR TESTE"
+        },
+        {
+          "alignment": {
+            "horizontal": "left",
+            "vertical": "center",
+            "wrap_text": false
+          },
+          "border": {
+            "bottom": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "left": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "right": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "top": {
+              "color": "C8D8EC",
+              "style": "thin"
+            }
+          },
+          "coordinate": "E10",
+          "data_type": "s",
+          "fill": {
+            "fg": "FFFFFF",
+            "type": "solid"
+          },
+          "font": {
+            "bold": false,
+            "color": "1F3864",
+            "italic": false,
+            "name": "Segoe UI",
+            "size": 10.0
+          },
+          "number_format": "General",
+          "value": "Desenvolvedor Sênior"
+        },
+        {
+          "alignment": null,
+          "border": {
+            "bottom": {
+              "color": "1A5C9E",
+              "style": "thin"
+            },
+            "left": {
+              "color": "1A5C9E",
+              "style": "thin"
+            },
+            "right": {
+              "color": "1A5C9E",
+              "style": "thin"
+            },
+            "top": {
+              "color": "1A5C9E",
+              "style": "thin"
+            }
+          },
+          "coordinate": "E12",
+          "data_type": "n",
+          "fill": {
+            "fg": "1F3864",
+            "type": "solid"
+          },
+          "font": null,
+          "number_format": "General",
+          "value": null
+        },
+        {
+          "alignment": {
+            "horizontal": "center",
+            "vertical": "center",
+            "wrap_text": false
+          },
+          "border": {
+            "bottom": {
+              "color": "1A5C9E",
+              "style": "thin"
+            },
+            "left": {
+              "color": "1A5C9E",
+              "style": "thin"
+            },
+            "right": {
+              "color": "1A5C9E",
+              "style": "thin"
+            },
+            "top": {
+              "color": "1A5C9E",
+              "style": "thin"
+            }
+          },
+          "coordinate": "E6",
+          "data_type": "s",
+          "fill": {
+            "fg": "2E75B6",
+            "type": "solid"
+          },
+          "font": {
+            "bold": true,
+            "color": "FFFFFF",
+            "italic": false,
+            "name": "Segoe UI",
+            "size": 10.0
+          },
+          "number_format": "General",
+          "value": "Cargo"
+        },
+        {
+          "alignment": {
+            "horizontal": "left",
+            "vertical": "center",
+            "wrap_text": false
+          },
+          "border": {
+            "bottom": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "left": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "right": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "top": {
+              "color": "C8D8EC",
+              "style": "thin"
+            }
+          },
+          "coordinate": "E7",
+          "data_type": "s",
+          "fill": {
+            "fg": "EEF4FB",
+            "type": "solid"
+          },
+          "font": {
+            "bold": false,
+            "color": "1F3864",
+            "italic": false,
+            "name": "Segoe UI",
+            "size": 10.0
+          },
+          "number_format": "General",
+          "value": "Desenvolvedor Sênior"
+        },
+        {
+          "alignment": {
+            "horizontal": "left",
+            "vertical": "center",
+            "wrap_text": false
+          },
+          "border": {
+            "bottom": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "left": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "right": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "top": {
+              "color": "C8D8EC",
+              "style": "thin"
+            }
+          },
+          "coordinate": "E8",
+          "data_type": "s",
+          "fill": {
+            "fg": "FFF2CC",
+            "type": "solid"
+          },
+          "font": {
+            "bold": false,
+            "color": "1F3864",
+            "italic": false,
+            "name": "Segoe UI",
+            "size": 10.0
+          },
+          "number_format": "General",
+          "value": "Desenvolvedor Sênior"
+        },
+        {
+          "alignment": {
+            "horizontal": "left",
+            "vertical": "center",
+            "wrap_text": false
+          },
+          "border": {
+            "bottom": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "left": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "right": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "top": {
+              "color": "C8D8EC",
+              "style": "thin"
+            }
+          },
+          "coordinate": "E9",
+          "data_type": "s",
+          "fill": {
+            "fg": "FFF2CC",
+            "type": "solid"
+          },
+          "font": {
+            "bold": false,
+            "color": "1F3864",
+            "italic": false,
+            "name": "Segoe UI",
+            "size": 10.0
+          },
+          "number_format": "General",
+          "value": "Desenvolvedor Sênior"
+        },
+        {
+          "alignment": {
+            "horizontal": "center",
+            "vertical": "center",
+            "wrap_text": false
+          },
+          "border": {
+            "bottom": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "left": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "right": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "top": {
+              "color": "C8D8EC",
+              "style": "thin"
+            }
+          },
+          "coordinate": "F10",
+          "data_type": "s",
+          "fill": {
+            "fg": "FFFFFF",
+            "type": "solid"
+          },
+          "font": {
+            "bold": false,
+            "color": "1F3864",
+            "italic": false,
+            "name": "Segoe UI",
+            "size": 10.0
+          },
+          "number_format": "General",
+          "value": "Presencial"
+        },
+        {
+          "alignment": null,
+          "border": {
+            "bottom": {
+              "color": "1A5C9E",
+              "style": "thin"
+            },
+            "left": {
+              "color": "1A5C9E",
+              "style": "thin"
+            },
+            "right": {
+              "color": "1A5C9E",
+              "style": "thin"
+            },
+            "top": {
+              "color": "1A5C9E",
+              "style": "thin"
+            }
+          },
+          "coordinate": "F12",
+          "data_type": "n",
+          "fill": {
+            "fg": "1F3864",
+            "type": "solid"
+          },
+          "font": null,
+          "number_format": "General",
+          "value": null
+        },
+        {
+          "alignment": {
+            "horizontal": "center",
+            "vertical": "center",
+            "wrap_text": false
+          },
+          "border": {
+            "bottom": {
+              "color": "1A5C9E",
+              "style": "thin"
+            },
+            "left": {
+              "color": "1A5C9E",
+              "style": "thin"
+            },
+            "right": {
+              "color": "1A5C9E",
+              "style": "thin"
+            },
+            "top": {
+              "color": "1A5C9E",
+              "style": "thin"
+            }
+          },
+          "coordinate": "F6",
+          "data_type": "s",
+          "fill": {
+            "fg": "2E75B6",
+            "type": "solid"
+          },
+          "font": {
+            "bold": true,
+            "color": "FFFFFF",
+            "italic": false,
+            "name": "Segoe UI",
+            "size": 10.0
+          },
+          "number_format": "General",
+          "value": "Modalidade"
+        },
+        {
+          "alignment": {
+            "horizontal": "center",
+            "vertical": "center",
+            "wrap_text": false
+          },
+          "border": {
+            "bottom": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "left": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "right": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "top": {
+              "color": "C8D8EC",
+              "style": "thin"
+            }
+          },
+          "coordinate": "F7",
+          "data_type": "s",
+          "fill": {
+            "fg": "EEF4FB",
+            "type": "solid"
+          },
+          "font": {
+            "bold": false,
+            "color": "1F3864",
+            "italic": false,
+            "name": "Segoe UI",
+            "size": 10.0
+          },
+          "number_format": "General",
+          "value": "Presencial"
+        },
+        {
+          "alignment": {
+            "horizontal": "center",
+            "vertical": "center",
+            "wrap_text": false
+          },
+          "border": {
+            "bottom": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "left": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "right": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "top": {
+              "color": "C8D8EC",
+              "style": "thin"
+            }
+          },
+          "coordinate": "F8",
+          "data_type": "s",
+          "fill": {
+            "fg": "FFF2CC",
+            "type": "solid"
+          },
+          "font": {
+            "bold": false,
+            "color": "1F3864",
+            "italic": false,
+            "name": "Segoe UI",
+            "size": 10.0
+          },
+          "number_format": "General",
+          "value": "Presencial"
+        },
+        {
+          "alignment": {
+            "horizontal": "center",
+            "vertical": "center",
+            "wrap_text": false
+          },
+          "border": {
+            "bottom": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "left": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "right": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "top": {
+              "color": "C8D8EC",
+              "style": "thin"
+            }
+          },
+          "coordinate": "F9",
+          "data_type": "s",
+          "fill": {
+            "fg": "FFF2CC",
+            "type": "solid"
+          },
+          "font": {
+            "bold": false,
+            "color": "1F3864",
+            "italic": false,
+            "name": "Segoe UI",
+            "size": 10.0
+          },
+          "number_format": "General",
+          "value": "Presencial"
+        },
+        {
+          "alignment": {
+            "horizontal": "left",
+            "vertical": "center",
+            "wrap_text": false
+          },
+          "border": {
+            "bottom": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "left": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "right": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "top": {
+              "color": "C8D8EC",
+              "style": "thin"
+            }
+          },
+          "coordinate": "G10",
+          "data_type": "s",
+          "fill": {
+            "fg": "FFFFFF",
+            "type": "solid"
+          },
+          "font": {
+            "bold": false,
+            "color": "000000",
+            "italic": false,
+            "name": "Segoe UI",
+            "size": 11.0
+          },
+          "number_format": "General",
+          "value": "Texto com controle   removido"
+        },
+        {
+          "alignment": null,
+          "border": {
+            "bottom": {
+              "color": "1A5C9E",
+              "style": "thin"
+            },
+            "left": {
+              "color": "1A5C9E",
+              "style": "thin"
+            },
+            "right": {
+              "color": "1A5C9E",
+              "style": "thin"
+            },
+            "top": {
+              "color": "1A5C9E",
+              "style": "thin"
+            }
+          },
+          "coordinate": "G12",
+          "data_type": "n",
+          "fill": {
+            "fg": "1F3864",
+            "type": "solid"
+          },
+          "font": null,
+          "number_format": "General",
+          "value": null
+        },
+        {
+          "alignment": {
+            "horizontal": "center",
+            "vertical": "center",
+            "wrap_text": false
+          },
+          "border": {
+            "bottom": {
+              "color": "1A5C9E",
+              "style": "thin"
+            },
+            "left": {
+              "color": "1A5C9E",
+              "style": "thin"
+            },
+            "right": {
+              "color": "1A5C9E",
+              "style": "thin"
+            },
+            "top": {
+              "color": "1A5C9E",
+              "style": "thin"
+            }
+          },
+          "coordinate": "G6",
+          "data_type": "s",
+          "fill": {
+            "fg": "2E75B6",
+            "type": "solid"
+          },
+          "font": {
+            "bold": true,
+            "color": "FFFFFF",
+            "italic": false,
+            "name": "Segoe UI",
+            "size": 10.0
+          },
+          "number_format": "General",
+          "value": "Atividades / Entregas"
+        },
+        {
+          "alignment": {
+            "horizontal": "left",
+            "vertical": "center",
+            "wrap_text": false
+          },
+          "border": {
+            "bottom": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "left": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "right": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "top": {
+              "color": "C8D8EC",
+              "style": "thin"
+            }
+          },
+          "coordinate": "G7",
+          "data_type": "s",
+          "fill": {
+            "fg": "EEF4FB",
+            "type": "solid"
+          },
+          "font": {
+            "bold": false,
+            "color": "000000",
+            "italic": false,
+            "name": "Segoe UI",
+            "size": 11.0
+          },
+          "number_format": "General",
+          "value": "Override do dia"
+        },
+        {
+          "alignment": {
+            "horizontal": "left",
+            "vertical": "center",
+            "wrap_text": false
+          },
+          "border": {
+            "bottom": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "left": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "right": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "top": {
+              "color": "C8D8EC",
+              "style": "thin"
+            }
+          },
+          "coordinate": "G8",
+          "data_type": "s",
+          "fill": {
+            "fg": "FFF2CC",
+            "type": "solid"
+          },
+          "font": {
+            "bold": false,
+            "color": "000000",
+            "italic": false,
+            "name": "Segoe UI",
+            "size": 11.0
+          },
+          "number_format": "General",
+          "value": "Atividade padrão"
+        },
+        {
+          "alignment": {
+            "horizontal": "left",
+            "vertical": "center",
+            "wrap_text": false
+          },
+          "border": {
+            "bottom": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "left": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "right": {
+              "color": "C8D8EC",
+              "style": "thin"
+            },
+            "top": {
+              "color": "C8D8EC",
+              "style": "thin"
+            }
+          },
+          "coordinate": "G9",
+          "data_type": "s",
+          "fill": {
+            "fg": "FFF2CC",
+            "type": "solid"
+          },
+          "font": {
+            "bold": false,
+            "color": "000000",
+            "italic": false,
+            "name": "Segoe UI",
+            "size": 11.0
+          },
+          "number_format": "General",
+          "value": "=HYPERLINK(\"https://example.invalid\")"
+        }
+      ],
+      "column_widths": {
+        "A": 13.0,
+        "B": 18.0,
+        "C": 17.0,
+        "D": 25.0,
+        "E": 22.0,
+        "F": 22.0,
+        "G": 52.0
+      },
+      "freeze_panes": "A7",
+      "merged_ranges": [
+        "A12:B12",
+        "A14:G14",
+        "A1:G1",
+        "A2:B2",
+        "A3:B3",
+        "A4:B4",
+        "C2:G2",
+        "C3:G3",
+        "C4:G4"
+      ],
+      "name": "Planilha1",
+      "row_heights": {
+        "1": 36.0,
+        "10": 18.0,
+        "11": 6.0,
+        "12": 28.0,
+        "14": 14.0,
+        "2": 18.0,
+        "3": 18.0,
+        "4": 18.0,
+        "5": 8.0,
+        "6": 28.0,
+        "7": 18.0,
+        "8": 18.0,
+        "9": 18.0
+      },
+      "show_grid_lines": false
+    }
+  ]
+}

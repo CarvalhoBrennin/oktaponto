@@ -1,0 +1,36 @@
+{
+  "profile": {
+    "employee_name": "=COLABORADOR TESTE",
+    "job_title": "Desenvolvedor Sênior",
+    "work_mode": "Presencial",
+    "default_activity": "Atividade padrão"
+  },
+  "year": 2026,
+  "month": 9,
+  "days": [
+    {
+      "date": "2026-09-01",
+      "worked_minutes": 480,
+      "activity": "Override do dia",
+      "include": true
+    },
+    {
+      "date": "2026-09-04",
+      "worked_minutes": 479,
+      "activity": "",
+      "include": true
+    },
+    {
+      "date": "2026-09-06",
+      "worked_minutes": 481,
+      "activity": "=HYPERLINK(\"https://example.invalid\")",
+      "include": true
+    },
+    {
+      "date": "2026-09-07",
+      "worked_minutes": 1440,
+      "activity": "Texto com controle \u0007 removido",
+      "include": true
+    }
+  ]
+}
