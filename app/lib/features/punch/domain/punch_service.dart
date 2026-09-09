@@ -88,7 +88,10 @@ final class DefaultPunchService implements PunchService {
       localTime.millisecond,
       localTime.microsecond,
     );
-    final occurredAtUtc = normalizedLocal.toUtc();
+    final offsetMinutes = punches.isNotEmpty
+        ? punches.first.utcOffsetMinutes
+        : normalizedLocal.timeZoneOffset.inMinutes;
+    final occurredAtUtc = wallClockToUtc(normalizedLocal, offsetMinutes);
     final insertionIndex = punches
         .where((punch) => punch.occurredAtUtc.isBefore(occurredAtUtc))
         .length;
@@ -96,7 +99,7 @@ final class DefaultPunchService implements PunchService {
     final draft = PunchDraft(
       localDate: localDateKey(localDate),
       occurredAtUtc: occurredAtUtc,
-      utcOffsetMinutes: normalizedLocal.timeZoneOffset.inMinutes,
+      utcOffsetMinutes: offsetMinutes,
       kind: kind,
       isEdited: true,
     );

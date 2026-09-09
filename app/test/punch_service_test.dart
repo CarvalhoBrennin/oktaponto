@@ -94,6 +94,28 @@ void main() {
     expect(ordered.map((item) => item.kind), [PunchKind.in_, PunchKind.out, PunchKind.in_, PunchKind.out]);
   });
 
+
+  test('manual correction reuses the day captured UTC offset', () async {
+    final repo = FakePunchRepository();
+    repo.items.add(
+      Punch(
+        id: 1,
+        occurredAtUtc: DateTime.utc(2026, 9, 1, 11),
+        localDate: '2026-09-01',
+        utcOffsetMinutes: -180,
+        kind: PunchKind.in_,
+        isEdited: false,
+      ),
+    );
+    final service = DefaultPunchService(repository: repo);
+    final inserted = await service.addManualPunch(
+      DateTime(2026, 9, 1),
+      DateTime(2026, 9, 1, 12),
+    );
+    expect(inserted.utcOffsetMinutes, -180);
+    expect(inserted.occurredAtUtc, DateTime.utc(2026, 9, 1, 15));
+  });
+
   test('editing into an impossible temporal sequence is rejected', () async {
     final repo = FakePunchRepository();
     repo.items.addAll([

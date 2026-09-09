@@ -40,6 +40,21 @@ const monthsPtSlug = <int, String>{
   12: 'dezembro',
 };
 
+
+/// Converts a wall-clock date/time plus its captured UTC offset into UTC.
+/// This is used when editing historical punches so a later device timezone
+/// change does not silently reinterpret the original local time.
+DateTime wallClockToUtc(DateTime wallClock, int utcOffsetMinutes) => DateTime.utc(
+      wallClock.year,
+      wallClock.month,
+      wallClock.day,
+      wallClock.hour,
+      wallClock.minute,
+      wallClock.second,
+      wallClock.millisecond,
+      wallClock.microsecond,
+    ).subtract(Duration(minutes: utcOffsetMinutes));
+
 String localDateKey(DateTime value) => DateFormat('yyyy-MM-dd').format(value);
 
 DateTime dateOnly(DateTime value) => DateTime(value.year, value.month, value.day);

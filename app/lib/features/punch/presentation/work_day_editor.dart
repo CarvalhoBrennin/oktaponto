@@ -92,14 +92,23 @@ class _WorkDayEditorDialogState extends ConsumerState<_WorkDayEditorDialog> {
       initialTime: TimeOfDay(hour: local.hour, minute: local.minute),
     );
     if (picked == null) return;
-    final editedLocal = DateTime(widget.date.year, widget.date.month, widget.date.day, picked.hour, picked.minute);
+    final editedLocal = DateTime(
+      widget.date.year,
+      widget.date.month,
+      widget.date.day,
+      picked.hour,
+      picked.minute,
+    );
     try {
       await ref.read(punchServiceProvider).editPunch(
             PunchEdit(
               id: punch.id,
               localDate: localDateKey(widget.date),
-              occurredAtUtc: editedLocal.toUtc(),
-              utcOffsetMinutes: editedLocal.timeZoneOffset.inMinutes,
+              occurredAtUtc: wallClockToUtc(
+                editedLocal,
+                punch.utcOffsetMinutes,
+              ),
+              utcOffsetMinutes: punch.utcOffsetMinutes,
               kind: punch.kind,
             ),
           );
