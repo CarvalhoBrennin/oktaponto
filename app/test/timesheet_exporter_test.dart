@@ -46,6 +46,14 @@ void main() {
     expect(sheet.cell(CellIndex.indexByString('C7')).value, isA<DoubleCellValue>());
     expect(sheet.cell(CellIndex.indexByString('G7')).value, isA<TextCellValue>());
     expect(sheet.cell(CellIndex.indexByString('G7')).value.toString(), contains('HYPERLINK'));
+    expect(
+      sheet.cell(CellIndex.indexByString('G8')).value.toString(),
+      contains('Padrão'),
+    );
+    expect(
+      sheet.cell(CellIndex.indexByString('C7')).cellStyle?.numberFormat.formatCode,
+      '[h]:mm',
+    );
   });
 
   test('rejects an invalid included day', () async {
