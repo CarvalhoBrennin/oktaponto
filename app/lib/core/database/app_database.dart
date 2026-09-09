@@ -7,22 +7,6 @@ import 'package:path_provider/path_provider.dart';
 
 part 'app_database.g.dart';
 
-@DataClassName('PunchRow')
-class Punches extends Table {
-  IntColumn get id => integer().autoIncrement()();
-  TextColumn get localDate => text()();
-  IntColumn get occurredAtUtcMs => integer()();
-  IntColumn get utcOffsetMin => integer()();
-  TextColumn get kind => text()();
-  BoolColumn get isEdited => boolean().withDefault(const Constant(false))();
-  IntColumn get deletedAtUtcMs => integer().nullable()();
-  IntColumn get createdAtUtcMs => integer()();
-  IntColumn get updatedAtUtcMs => integer()();
-
-  @override
-  List<Set<Column<Object>>>? get uniqueKeys => null;
-}
-
 @DataClassName('WorkDayRow')
 class WorkDays extends Table {
   TextColumn get localDate => text()();
@@ -34,6 +18,19 @@ class WorkDays extends Table {
 
   @override
   Set<Column<Object>> get primaryKey => {localDate};
+}
+
+@DataClassName('PunchRow')
+class Punches extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get localDate => text().references(WorkDays, #localDate)();
+  IntColumn get occurredAtUtcMs => integer()();
+  IntColumn get utcOffsetMin => integer()();
+  TextColumn get kind => text()();
+  BoolColumn get isEdited => boolean().withDefault(const Constant(false))();
+  IntColumn get deletedAtUtcMs => integer().nullable()();
+  IntColumn get createdAtUtcMs => integer()();
+  IntColumn get updatedAtUtcMs => integer()();
 }
 
 @DataClassName('PunchAuditRow')
@@ -69,7 +66,7 @@ class Reminders extends Table {
   BoolColumn get enabled => boolean().withDefault(const Constant(true))();
 }
 
-@DriftDatabase(tables: [Punches, WorkDays, PunchAudit, ProfileSettings, Reminders])
+@DriftDatabase(tables: [WorkDays, Punches, PunchAudit, ProfileSettings, Reminders])
 class AppDatabase extends _$AppDatabase {
   AppDatabase({QueryExecutor? executor}) : super(executor ?? _openConnection());
 

@@ -17,7 +17,7 @@ final class DefaultPunchService implements PunchService {
     required this.repository,
     Clock? timeClock,
     this.sequenceValidator = const PunchSequenceValidator(),
-  }) : timeClock = timeClock ?? const Clock();
+  }) : timeClock = timeClock ?? Clock();
 
   final PunchRepository repository;
   final Clock timeClock;
@@ -45,14 +45,28 @@ final class DefaultPunchService implements PunchService {
         throw StateError('Jornada cruzando meia-noite não é inferida automaticamente no MVP.');
       }
       final kind = punches.length.isEven ? PunchKind.in_ : PunchKind.out;
-      return repository.insert(
-        PunchDraft(
-          localDate: localDateKey(localDate),
-          occurredAtUtc: nowLocal.toUtc(),
-          utcOffsetMinutes: nowLocal.timeZoneOffset.inMinutes,
-          kind: kind,
-        ),
+      final draft = PunchDraft(
+        localDate: localDateKey(localDate),
+        occurredAtUtc: nowLocal.toUtc(),
+        utcOffsetMinutes: nowLocal.timeZoneOffset.inMinutes,
+        kind: kind,
       );
+      final candidate = <Punch>[
+        ...punches,
+        Punch(
+          id: -1,
+          occurredAtUtc: draft.occurredAtUtc,
+          localDate: draft.localDate,
+          utcOffsetMinutes: draft.utcOffsetMinutes,
+          kind: draft.kind,
+          isEdited: false,
+        ),
+      ];
+      final candidateIssues = sequenceValidator.validate(candidate);
+      if (candidateIssues.any((issue) => issue.blocking)) {
+        throw StateError(candidateIssues.first.message);
+      }
+      return repository.insert(draft);
     } finally {
       _registrationInFlight = false;
     }
@@ -64,7 +78,6 @@ final class DefaultPunchService implements PunchService {
     if (punches.length >= 4) {
       throw StateError('O dia já possui quatro batidas.');
     }
-    final kind = punches.length.isEven ? PunchKind.in_ : PunchKind.out;
     final normalizedLocal = DateTime(
       localDate.year,
       localDate.month,
@@ -75,9 +88,14 @@ final class DefaultPunchService implements PunchService {
       localTime.millisecond,
       localTime.microsecond,
     );
+    final occurredAtUtc = normalizedLocal.toUtc();
+    final insertionIndex = punches
+        .where((punch) => punch.occurredAtUtc.isBefore(occurredAtUtc))
+        .length;
+    final kind = insertionIndex.isEven ? PunchKind.in_ : PunchKind.out;
     final draft = PunchDraft(
       localDate: localDateKey(localDate),
-      occurredAtUtc: normalizedLocal.toUtc(),
+      occurredAtUtc: occurredAtUtc,
       utcOffsetMinutes: normalizedLocal.timeZoneOffset.inMinutes,
       kind: kind,
       isEdited: true,

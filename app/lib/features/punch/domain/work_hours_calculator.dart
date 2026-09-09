@@ -23,9 +23,11 @@ final class DefaultWorkHoursCalculator implements WorkHoursCalculator {
     List<Punch> punches,
     WorkDayMetadata metadata,
   ) {
+    // Validate the repository/input order before sorting. Sorting first would
+    // hide corrupt or out-of-order source data, which must fail closed.
+    final issues = [...sequenceValidator.validate(punches)];
     final sorted = [...punches]
       ..sort((a, b) => a.occurredAtUtc.compareTo(b.occurredAtUtc));
-    final issues = [...sequenceValidator.validate(sorted)];
 
     var workedMinutes = 0;
     for (var index = 0; index + 1 < sorted.length; index += 2) {
@@ -39,7 +41,11 @@ final class DefaultWorkHoursCalculator implements WorkHoursCalculator {
     }
 
     final key = localDateKey(date);
-    if (sorted.any((punch) => punch.localDate != key)) {
+    if (sorted.any(
+      (punch) =>
+          punch.localDate != key ||
+          localDateKey(punch.occurredAtLocal) != key,
+    )) {
       issues.add(
         const ValidationIssue(
           'cross_local_date',

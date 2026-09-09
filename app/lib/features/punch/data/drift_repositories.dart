@@ -286,7 +286,7 @@ final class DriftSettingsRepository implements SettingsRepository {
     final now = DateTime.now().toUtc().millisecondsSinceEpoch;
     await db.into(db.profileSettings).insertOnConflictUpdate(
           ProfileSettingsCompanion.insert(
-            id: const Value(1),
+            id: 1,
             employeeName: profile.employeeName,
             jobTitle: profile.jobTitle,
             workMode: profile.workMode,
@@ -329,8 +329,14 @@ final class DriftReminderRepository implements ReminderRepository {
 
   @override
   Future<int> save(ReminderConfig reminder) async {
+    if (reminder.label.trim().isEmpty) {
+      throw ArgumentError('Informe um nome para o lembrete.');
+    }
     if (reminder.hour < 0 || reminder.hour > 23 || reminder.minute < 0 || reminder.minute > 59) {
       throw ArgumentError('Horário de lembrete inválido.');
+    }
+    if (reminder.weekdaysMask < 1 || reminder.weekdaysMask > 0x7f) {
+      throw ArgumentError('Selecione ao menos um dia válido da semana.');
     }
     if (reminder.id <= 0) {
       return db.into(db.reminders).insert(
