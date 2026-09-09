@@ -27,11 +27,11 @@ final class ExcelTimesheetExporter implements TimesheetExporter {
     final filename = defaultFilenameForMonth(
       DateTime(month.year, month.month),
     );
-    final outputPath = await fileService.reserveUniqueName(
+    final outputPath = await fileService.writeUniqueAtomically(
       outputDirectory,
       filename,
+      workbook.bytes,
     );
-    await fileService.writeAtomically(outputPath, workbook.bytes);
     return TimesheetGenerationResult(
       outputPath: outputPath,
       includedDays: workbook.includedDays,

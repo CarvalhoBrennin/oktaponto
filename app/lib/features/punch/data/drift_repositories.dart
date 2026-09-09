@@ -355,7 +355,9 @@ final class DriftReminderRepository implements ReminderRepository {
             ),
           );
     }
-    await (db.update(db.reminders)..where((row) => row.id.equals(reminder.id))).write(
+    final updated = await (db.update(db.reminders)
+          ..where((row) => row.id.equals(reminder.id)))
+        .write(
       RemindersCompanion(
         label: Value(reminder.label),
         hour: Value(reminder.hour),
@@ -364,6 +366,18 @@ final class DriftReminderRepository implements ReminderRepository {
         enabled: Value(reminder.enabled),
       ),
     );
+    if (updated == 0) {
+      await db.into(db.reminders).insert(
+            RemindersCompanion(
+              id: Value(reminder.id),
+              label: Value(reminder.label),
+              hour: Value(reminder.hour),
+              minute: Value(reminder.minute),
+              weekdaysMask: Value(reminder.weekdaysMask),
+              enabled: Value(reminder.enabled),
+            ),
+          );
+    }
     return reminder.id;
   }
 

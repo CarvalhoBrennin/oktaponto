@@ -1,26 +1,31 @@
-import '../../punch/domain/repositories.dart';
+import '../../../core/database/app_database.dart';
+import '../../../core/files/file_service.dart';
 
-/// Explicit destructive use case used by Settings. Keeping this operation out
-/// of widgets preserves the presentation -> application/domain -> data flow.
+/// Explicit destructive use case used by Settings.
+///
+/// SQLite tables are cleared in one database transaction. Filesystem exports
+/// are then removed. The caller is responsible for cancelling OS reminders and
+/// invalidating presentation providers after this operation succeeds.
 final class DataResetService {
   const DataResetService({
-    required this.punches,
-    required this.workDays,
-    required this.settings,
-    required this.reminders,
+    required this.database,
+    required this.files,
   });
 
-  final PunchRepository punches;
-  final WorkDayRepository workDays;
-  final SettingsRepository settings;
-  final ReminderRepository reminders;
+  final AppDatabase database;
+  final FileService files;
 
-  Future<void> clearAll() {
-    return punches.transaction((_) async {
-      await punches.clearAll();
-      await workDays.clearAll();
-      await settings.clearAll();
-      await reminders.clearAll();
+  Future<void> clearAll() async {
+    // Remove generated copies first. If filesystem cleanup cannot complete, the
+    // authoritative SQLite data is left intact and the caller can retry; this
+    // avoids reporting a reset while sensitive exports are still present.
+    await files.clearExports();
+    await database.transaction(() async {
+      await database.delete(database.punchAudit).go();
+      await database.delete(database.punches).go();
+      await database.delete(database.workDays).go();
+      await database.delete(database.profileSettings).go();
+      await database.delete(database.reminders).go();
     });
   }
 }

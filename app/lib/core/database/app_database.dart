@@ -85,6 +85,7 @@ class AppDatabase extends _$AppDatabase {
             'CREATE INDEX idx_punch_audit_punch '
             'ON punch_audit(punch_id, changed_at_utc_ms)',
           );
+          await _ensureIntegrityGuards();
         },
         onUpgrade: (m, from, to) async {
           if (from != to) {
@@ -93,8 +94,36 @@ class AppDatabase extends _$AppDatabase {
         },
         beforeOpen: (details) async {
           await customStatement('PRAGMA foreign_keys = ON');
+          await _ensureIntegrityGuards();
         },
       );
+
+
+  Future<void> _ensureIntegrityGuards() async {
+    await customStatement(
+      "CREATE TRIGGER IF NOT EXISTS trg_punch_kind_insert "
+      "BEFORE INSERT ON punches WHEN NEW.kind NOT IN ('in','out') "
+      "BEGIN SELECT RAISE(ABORT, 'invalid punch kind'); END",
+    );
+    await customStatement(
+      "CREATE TRIGGER IF NOT EXISTS trg_punch_kind_update "
+      "BEFORE UPDATE OF kind ON punches WHEN NEW.kind NOT IN ('in','out') "
+      "BEGIN SELECT RAISE(ABORT, 'invalid punch kind'); END",
+    );
+    await customStatement(
+      'CREATE TRIGGER IF NOT EXISTS trg_reminder_bounds_insert '
+      'BEFORE INSERT ON reminders WHEN NEW.hour < 0 OR NEW.hour > 23 '
+      'OR NEW.minute < 0 OR NEW.minute > 59 OR NEW.weekdays_mask < 1 '
+      "OR NEW.weekdays_mask > 127 BEGIN SELECT RAISE(ABORT, 'invalid reminder'); END",
+    );
+    await customStatement(
+      'CREATE TRIGGER IF NOT EXISTS trg_reminder_bounds_update '
+      'BEFORE UPDATE OF hour, minute, weekdays_mask ON reminders '
+      'WHEN NEW.hour < 0 OR NEW.hour > 23 OR NEW.minute < 0 '
+      'OR NEW.minute > 59 OR NEW.weekdays_mask < 1 OR NEW.weekdays_mask > 127 '
+      "BEGIN SELECT RAISE(ABORT, 'invalid reminder'); END",
+    );
+  }
 
   static QueryExecutor _openConnection() {
     return LazyDatabase(() async {

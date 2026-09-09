@@ -41,10 +41,8 @@ final shareServiceProvider = Provider<FileShareService>((ref) => const NativeFil
 final notificationServiceProvider = Provider<LocalNotificationService>((ref) => LocalNotificationService.instance);
 final dataResetServiceProvider = Provider<DataResetService>(
   (ref) => DataResetService(
-    punches: ref.watch(punchRepositoryProvider),
-    workDays: ref.watch(workDayRepositoryProvider),
-    settings: ref.watch(settingsRepositoryProvider),
-    reminders: ref.watch(reminderRepositoryProvider),
+    database: ref.watch(databaseProvider),
+    files: ref.watch(fileServiceProvider),
   ),
 );
 

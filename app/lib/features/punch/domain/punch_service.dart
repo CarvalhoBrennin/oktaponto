@@ -97,9 +97,9 @@ final class DefaultPunchService implements PunchService {
         localTime.millisecond,
         localTime.microsecond,
       );
-      final offsetMinutes = punches.isNotEmpty
-          ? punches.first.utcOffsetMinutes
-          : normalizedLocal.timeZoneOffset.inMinutes;
+      // Use the offset at the manually selected wall-clock instant. Reusing
+      // the first punch offset can be wrong on daylight-saving transitions.
+      final offsetMinutes = normalizedLocal.timeZoneOffset.inMinutes;
       final occurredAtUtc = wallClockToUtc(normalizedLocal, offsetMinutes);
       final insertionIndex = punches
           .where((punch) => punch.occurredAtUtc.isBefore(occurredAtUtc))

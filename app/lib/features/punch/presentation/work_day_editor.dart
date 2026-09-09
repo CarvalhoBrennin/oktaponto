@@ -38,14 +38,19 @@ class _WorkDayEditorDialogState extends ConsumerState<_WorkDayEditorDialog> {
   }
 
   Future<void> _loadMetadata() async {
-    final metadata = await ref.read(workDayRepositoryProvider).getDay(widget.date);
-    if (!mounted) return;
-    setState(() {
-      _include = metadata.includeInTimesheet;
-      _activity.text = metadata.activity ?? '';
-      _note.text = metadata.note ?? '';
-      _metadataLoaded = true;
-    });
+    try {
+      final metadata = await ref.read(workDayRepositoryProvider).getDay(widget.date);
+      if (!mounted) return;
+      setState(() {
+        _include = metadata.includeInTimesheet;
+        _activity.text = metadata.activity ?? '';
+        _note.text = metadata.note ?? '';
+        _metadataLoaded = true;
+        _error = null;
+      });
+    } catch (error) {
+      if (mounted) setState(() => _error = error.toString());
+    }
   }
 
   @override
@@ -55,17 +60,24 @@ class _WorkDayEditorDialogState extends ConsumerState<_WorkDayEditorDialog> {
     super.dispose();
   }
 
-  Future<void> _saveMetadata() async {
-    await ref.read(workDayRepositoryProvider).upsert(
-          WorkDayMetadata(
-            localDate: localDateKey(widget.date),
-            includeInTimesheet: _include,
-            activity: _activity.text.trim().isEmpty ? null : _activity.text.trim(),
-            note: _note.text.trim().isEmpty ? null : _note.text.trim(),
-          ),
-        );
-    ref.invalidate(daySummaryProvider(widget.date));
-    ref.invalidate(monthSummaryProvider(DateTime(widget.date.year, widget.date.month)));
+  Future<bool> _saveMetadata() async {
+    try {
+      await ref.read(workDayRepositoryProvider).upsert(
+            WorkDayMetadata(
+              localDate: localDateKey(widget.date),
+              includeInTimesheet: _include,
+              activity: _activity.text.trim().isEmpty ? null : _activity.text.trim(),
+              note: _note.text.trim().isEmpty ? null : _note.text.trim(),
+            ),
+          );
+      ref.invalidate(daySummaryProvider(widget.date));
+      ref.invalidate(monthSummaryProvider(DateTime(widget.date.year, widget.date.month)));
+      if (mounted) setState(() => _error = null);
+      return true;
+    } catch (error) {
+      if (mounted) setState(() => _error = error.toString());
+      return false;
+    }
   }
 
   Future<void> _addPunch() async {
@@ -100,15 +112,16 @@ class _WorkDayEditorDialogState extends ConsumerState<_WorkDayEditorDialog> {
       picked.minute,
     );
     try {
+      final editedOffsetMinutes = editedLocal.timeZoneOffset.inMinutes;
       await ref.read(punchServiceProvider).editPunch(
             PunchEdit(
               id: punch.id,
               localDate: localDateKey(widget.date),
               occurredAtUtc: wallClockToUtc(
                 editedLocal,
-                punch.utcOffsetMinutes,
+                editedOffsetMinutes,
               ),
-              utcOffsetMinutes: punch.utcOffsetMinutes,
+              utcOffsetMinutes: editedOffsetMinutes,
               kind: punch.kind,
             ),
           );
@@ -134,9 +147,14 @@ class _WorkDayEditorDialogState extends ConsumerState<_WorkDayEditorDialog> {
         ) ??
         false;
     if (!confirmed) return;
-    await ref.read(punchServiceProvider).deletePunch(punch.id, widget.date);
-    ref.invalidate(daySummaryProvider(widget.date));
-    ref.invalidate(monthSummaryProvider(DateTime(widget.date.year, widget.date.month)));
+    try {
+      await ref.read(punchServiceProvider).deletePunch(punch.id, widget.date);
+      ref.invalidate(daySummaryProvider(widget.date));
+      ref.invalidate(monthSummaryProvider(DateTime(widget.date.year, widget.date.month)));
+      if (mounted) setState(() => _error = null);
+    } catch (error) {
+      if (mounted) setState(() => _error = error.toString().replaceFirst('Bad state: ', ''));
+    }
   }
 
   @override
@@ -229,8 +247,8 @@ class _WorkDayEditorDialogState extends ConsumerState<_WorkDayEditorDialog> {
         FilledButton(
           onPressed: _metadataLoaded
               ? () async {
-                  await _saveMetadata();
-                  if (context.mounted) Navigator.pop(context);
+                  final saved = await _saveMetadata();
+                  if (saved && context.mounted) Navigator.pop(context);
                 }
               : null,
           child: const Text('Salvar'),

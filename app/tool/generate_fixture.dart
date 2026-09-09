@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:horafolio/features/month_close/domain/monthly_close_validator.dart';
 import 'package:horafolio/features/punch/domain/models.dart';
 import 'package:horafolio/features/timesheet/data/timesheet_workbook_builder.dart';
 
@@ -53,7 +54,20 @@ Future<void> main(List<String> args) async {
   );
   final requested = File(output);
   await requested.parent.create(recursive: true);
-  final workbook = const TimesheetWorkbookBuilder().build(month, profile);
+  final workbook = const TimesheetWorkbookBuilder(
+    validator: _ContractFixtureValidator(),
+  ).build(month, profile);
   await requested.writeAsBytes(workbook.bytes, flush: true);
   stdout.writeln(requested.path);
+}
+
+
+/// Contract fixtures deliberately exercise XLSX representations (including a
+/// 24:00 cell) independently from production punch-domain eligibility.
+final class _ContractFixtureValidator implements MonthlyCloseValidator {
+  const _ContractFixtureValidator();
+
+  @override
+  MonthValidationResult validate(MonthSummary month) =>
+      const MonthValidationResult([]);
 }

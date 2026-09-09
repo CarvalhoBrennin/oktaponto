@@ -10,7 +10,6 @@ import 'package:horafolio/features/punch/domain/models.dart';
 import 'package:horafolio/features/punch/presentation/today_screen.dart';
 import 'package:horafolio/providers/app_providers.dart';
 
-const _goldenUpdate = bool.fromEnvironment('HORAFOLIO_UPDATE_GOLDENS');
 
 Future<({ProviderContainer container, AppDatabase database})> _containerWithPunches(
   List<(DateTime, PunchKind)> punches,
@@ -36,7 +35,6 @@ Future<({ProviderContainer container, AppDatabase database})> _containerWithPunc
   return (container: container, database: db);
 }
 
-bool _canRunGolden(String path) => _goldenUpdate || File(path).existsSync();
 
 Future<void> _pumpToday(
   WidgetTester tester,
@@ -61,7 +59,19 @@ Future<void> _pumpToday(
 }
 
 void main() {
-  final emptyPath = 'test/goldens/ui/today_empty.png';
+  test('golden baselines are versioned', () {
+    for (final path in <String>[
+      'test/goldens/ui/today_empty.png',
+      'test/goldens/ui/today_working.png',
+      'test/goldens/ui/today_complete.png',
+    ]) {
+      expect(
+        File(path).existsSync(),
+        isTrue,
+        reason: 'Baseline ausente: $path. Execute tool/update_goldens.sh em Flutter 3.47.2 e versione o PNG.',
+      );
+    }
+  });
   testWidgets(
     'golden: Hoje vazio',
     (tester) async {
@@ -76,12 +86,8 @@ void main() {
         matchesGoldenFile('goldens/ui/today_empty.png'),
       );
     },
-    skip: _canRunGolden(emptyPath)
-        ? false
-        : 'Baseline ainda não renderizado; execute tool/update_goldens.sh.',
   );
 
-  final workingPath = 'test/goldens/ui/today_working.png';
   testWidgets(
     'golden: Hoje trabalhando',
     (tester) async {
@@ -98,12 +104,8 @@ void main() {
         matchesGoldenFile('goldens/ui/today_working.png'),
       );
     },
-    skip: _canRunGolden(workingPath)
-        ? false
-        : 'Baseline ainda não renderizado; execute tool/update_goldens.sh.',
   );
 
-  final completePath = 'test/goldens/ui/today_complete.png';
   testWidgets(
     'golden: Hoje completo',
     (tester) async {
@@ -123,8 +125,5 @@ void main() {
         matchesGoldenFile('goldens/ui/today_complete.png'),
       );
     },
-    skip: _canRunGolden(completePath)
-        ? false
-        : 'Baseline ainda não renderizado; execute tool/update_goldens.sh.',
   );
 }
