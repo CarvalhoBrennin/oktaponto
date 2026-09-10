@@ -34,10 +34,10 @@ dart format --output=none --set-exit-if-changed .
 flutter analyze
 flutter test --coverage
 
-if [[ -n "${HORAFOLIO_DEVICE_ID:-}" ]]; then
-  flutter test integration_test -d "$HORAFOLIO_DEVICE_ID"
+if [[ -n "${OKTAPONTO_DEVICE_ID:-}" ]]; then
+  flutter test integration_test -d "$OKTAPONTO_DEVICE_ID"
 else
-  echo 'HORAFOLIO_DEVICE_ID não definido; smoke E2E móvel é obrigatório para release.' >&2
+  echo 'OKTAPONTO_DEVICE_ID não definido; smoke E2E móvel é obrigatório para release.' >&2
   exit 69
 fi
 

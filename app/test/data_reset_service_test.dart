@@ -2,14 +2,14 @@ import 'dart:io';
 
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:horafolio/core/database/app_database.dart';
-import 'package:horafolio/core/files/file_service.dart';
-import 'package:horafolio/features/settings/domain/data_reset_service.dart';
+import 'package:oktaponto/core/database/app_database.dart';
+import 'package:oktaponto/core/files/file_service.dart';
+import 'package:oktaponto/features/settings/domain/data_reset_service.dart';
 
 void main() {
   test('clearAll removes SQLite data and generated exports', () async {
     final db = AppDatabase(executor: NativeDatabase.memory());
-    final root = await Directory.systemTemp.createTemp('horafolio_reset_');
+    final root = await Directory.systemTemp.createTemp('oktaponto_reset_');
     final files = FileService(documentsRootPath: root.path);
     addTearDown(() async {
       await db.close();

@@ -1,13 +1,13 @@
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:horafolio/core/files/file_service.dart';
+import 'package:oktaponto/core/files/file_service.dart';
 
 void main() {
   const service = FileService();
 
   test('reserveUniqueName never overwrites an existing export', () async {
-    final dir = await Directory.systemTemp.createTemp('horafolio_files_');
+    final dir = await Directory.systemTemp.createTemp('oktaponto_files_');
     addTearDown(() => dir.delete(recursive: true));
     final first = File('${dir.path}/timesheet.xlsx');
     await first.writeAsBytes([1, 2, 3]);
@@ -19,7 +19,7 @@ void main() {
   test(
     'atomic write fails closed if target appears and preserves it',
     () async {
-      final dir = await Directory.systemTemp.createTemp('horafolio_atomic_');
+      final dir = await Directory.systemTemp.createTemp('oktaponto_atomic_');
       addTearDown(() => dir.delete(recursive: true));
       final target = File('${dir.path}/timesheet.xlsx');
       await target.writeAsBytes([9, 9, 9]);

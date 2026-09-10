@@ -12,9 +12,9 @@ from .theme import apply_dark_theme
 
 def run_app() -> int:
     app = QApplication.instance() or QApplication(sys.argv)
-    app.setApplicationName("HoraFolio")
-    app.setApplicationDisplayName("HoraFolio")
-    app.setOrganizationName("HoraFolio")
+    app.setApplicationName("OktaPonto")
+    app.setApplicationDisplayName("OktaPonto")
+    app.setOrganizationName("OktaPonto")
     apply_dark_theme(app)
     window = MainWindow()
     window.show()

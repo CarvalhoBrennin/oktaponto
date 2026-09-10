@@ -1,4 +1,4 @@
-# Code review completo — HoraFolio / Timesheet Banco de Horas
+# Code review completo — OktaPonto / Timesheet Banco de Horas
 
 Data da revisão: 01/09/2026
 

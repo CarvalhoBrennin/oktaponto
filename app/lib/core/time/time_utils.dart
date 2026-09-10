@@ -95,3 +95,37 @@ String minutesToHhmm(int minutes) {
 String formatClock(DateTime local) => DateFormat('HH:mm').format(local);
 
 String formatDateBr(DateTime date) => DateFormat('dd/MM/yyyy').format(date);
+
+/// Duração em formato de leitura rápida: `08h37`.
+///
+/// Usado nos títulos e contadores da interface, onde `8:37` é ambíguo com um
+/// horário do relógio. `minutesToHhmm` continua servindo listas densas.
+String minutesToCompactHm(int minutes) {
+  final safe = minutes < 0 ? 0 : minutes;
+  final hours = safe ~/ 60;
+  final rest = safe % 60;
+  return '${hours.toString().padLeft(2, '0')}h'
+      '${rest.toString().padLeft(2, '0')}';
+}
+
+/// Dia + mês por extenso: `09 de setembro`.
+String dayAndMonthPt(DateTime date) =>
+    '${date.day.toString().padLeft(2, '0')} de '
+    '${monthsPtUpper[date.month]!.toLowerCase()}';
+
+/// Abreviação de três letras usada em listas e no cabeçalho do calendário.
+String weekdayShortPt(DateTime date) => const <int, String>{
+  DateTime.monday: 'SEG',
+  DateTime.tuesday: 'TER',
+  DateTime.wednesday: 'QUA',
+  DateTime.thursday: 'QUI',
+  DateTime.friday: 'SEX',
+  DateTime.saturday: 'SÁB',
+  DateTime.sunday: 'DOM',
+}[date.weekday]!;
+
+/// Nome do mês com apenas a inicial maiúscula: `Setembro 2026`.
+String monthYearTitlePt(DateTime date) {
+  final name = monthsPtUpper[date.month]!;
+  return '${name[0]}${name.substring(1).toLowerCase()} ${date.year}';
+}

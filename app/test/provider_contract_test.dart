@@ -1,9 +1,9 @@
 import 'package:drift/native.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:horafolio/core/database/app_database.dart';
-import 'package:horafolio/features/punch/domain/models.dart';
-import 'package:horafolio/providers/app_providers.dart';
+import 'package:oktaponto/core/database/app_database.dart';
+import 'package:oktaponto/features/punch/domain/models.dart';
+import 'package:oktaponto/providers/app_providers.dart';
 
 void main() {
   test(

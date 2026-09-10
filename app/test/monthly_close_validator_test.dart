@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:horafolio/features/month_close/domain/monthly_close_validator.dart';
-import 'package:horafolio/features/punch/domain/models.dart';
+import 'package:oktaponto/features/month_close/domain/monthly_close_validator.dart';
+import 'package:oktaponto/features/punch/domain/models.dart';
 
 Punch _p(int id, int hour, int minute, PunchKind kind) => Punch(
   id: id,

@@ -1,6 +1,6 @@
-# HoraFólio Mobile
+# OktaPonto Mobile
 
-Migração integral do HoraFólio desktop para Flutter, offline-first, com as **batidas locais como fonte da verdade**.
+Migração integral do OktaPonto desktop para Flutter, offline-first, com as **batidas locais como fonte da verdade**.
 
 ## Fluxo
 
@@ -39,7 +39,7 @@ Gate estrito de release (exige lockfile, goldens e device/emulador):
 
 ```bash
 cd app
-HORAFOLIO_DEVICE_ID=<device-id> ./tool/release_gate.sh
+OKTAPONTO_DEVICE_ID=<device-id> ./tool/release_gate.sh
 ```
 
 Ou manualmente:

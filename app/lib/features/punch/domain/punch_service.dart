@@ -38,7 +38,7 @@ final class DefaultPunchService implements PunchService {
           'Jornada cruzando meia-noite não é inferida automaticamente no MVP.',
         );
       }
-      return repository.transaction((transactionalRepository) async {
+      return await repository.transaction((transactionalRepository) async {
         final punches = await transactionalRepository.listDay(localDate);
         final issues = sequenceValidator.validate(punches);
         if (issues.any((issue) => issue.blocking)) {

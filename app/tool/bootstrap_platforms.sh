@@ -8,13 +8,13 @@ if ! command -v flutter >/dev/null 2>&1; then
 fi
 
 version_line="$(flutter --version | head -n 1)"
-if [[ "$version_line" != *"Flutter 3.47.2"* && "${HORAFOLIO_ALLOW_OTHER_FLUTTER:-0}" != "1" ]]; then
+if [[ "$version_line" != *"Flutter 3.47.2"* && "${OKTAPONTO_ALLOW_OTHER_FLUTTER:-0}" != "1" ]]; then
   echo "Este projeto foi congelado para Flutter 3.47.2. Encontrado: $version_line" >&2
-  echo "Use 3.47.2 ou defina HORAFOLIO_ALLOW_OTHER_FLUTTER=1 conscientemente." >&2
+  echo "Use 3.47.2 ou defina OKTAPONTO_ALLOW_OTHER_FLUTTER=1 conscientemente." >&2
   exit 65
 fi
 
 if [[ ! -d android || ! -d ios ]]; then
-  flutter create --platforms=android,ios --org com.example --project-name horafolio .
+  flutter create --platforms=android,ios --org com.oktaponto --project-name oktaponto .
 fi
 python3 tool/configure_platforms.py

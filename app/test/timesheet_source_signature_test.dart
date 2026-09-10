@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:horafolio/features/punch/domain/models.dart';
-import 'package:horafolio/features/timesheet/domain/timesheet_source_signature.dart';
+import 'package:oktaponto/features/punch/domain/models.dart';
+import 'package:oktaponto/features/timesheet/domain/timesheet_source_signature.dart';
 
 WorkDaySummary _day({String? activity, int minute = 0}) => WorkDaySummary(
   date: DateTime(2026, 9, 1),

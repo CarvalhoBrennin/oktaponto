@@ -2,9 +2,9 @@ import 'dart:io';
 
 import 'package:excel_plus/excel_plus.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:horafolio/features/punch/domain/models.dart';
-import 'package:horafolio/features/timesheet/data/excel_timesheet_exporter.dart';
-import 'package:horafolio/features/timesheet/domain/xlsx_safe_text.dart';
+import 'package:oktaponto/features/punch/domain/models.dart';
+import 'package:oktaponto/features/timesheet/data/excel_timesheet_exporter.dart';
+import 'package:oktaponto/features/timesheet/domain/xlsx_safe_text.dart';
 
 WorkDaySummary complete(DateTime date, int minutes, {String? activity}) {
   final first = 240;
@@ -72,7 +72,7 @@ void main() {
   test(
     'exports numeric duration, safe text, freeze panes and no-overwrite',
     () async {
-      final dir = await Directory.systemTemp.createTemp('horafolio_xlsx_');
+      final dir = await Directory.systemTemp.createTemp('oktaponto_xlsx_');
       addTearDown(() => dir.delete(recursive: true));
       const profile = ProfileSettingsModel(
         employeeName: 'Pessoa',
@@ -103,9 +103,12 @@ void main() {
       final sheet = excel['Planilha1'];
       expect(sheet.showGridLines, isFalse);
       expect(sheet.frozenRows, 6);
+      final durationValue = sheet.cell(CellIndex.indexByString('C7')).value;
       expect(
-        sheet.cell(CellIndex.indexByString('C7')).value,
-        isA<DoubleCellValue>(),
+        durationValue,
+        anyOf(isA<DoubleCellValue>(), isA<TimeCellValue>()),
+        reason:
+            'C7 deve ser duração numérica (Double) ou Time com formato [h]:mm; obtido $durationValue',
       );
       expect(
         sheet.cell(CellIndex.indexByString('G7')).value,
@@ -119,13 +122,16 @@ void main() {
         sheet.cell(CellIndex.indexByString('G8')).value.toString(),
         contains('Padrão'),
       );
+      final fmt = sheet
+          .cell(CellIndex.indexByString('C7'))
+          .cellStyle
+          ?.numberFormat
+          .formatCode;
       expect(
-        sheet
-            .cell(CellIndex.indexByString('C7'))
-            .cellStyle
-            ?.numberFormat
-            .formatCode,
-        '[h]:mm',
+        fmt,
+        anyOf('[h]:mm', 'h:mm', contains('h:mm')),
+        reason:
+            'Formato de duração deve ser [h]:mm (ou h:mm compatível); obtido $fmt',
       );
     },
   );

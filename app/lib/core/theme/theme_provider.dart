@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-const _kThemeModeKey = 'horafolio_theme_mode';
+const _kThemeModeKey = 'oktaponto_theme_mode';
+const _kLegacyThemeModeKey = 'horafolio_theme_mode';
 
 /// Ordem imutável para persistência: 0=system, 1=light, 2=dark
 int _encode(ThemeMode mode) => switch (mode) {
@@ -42,7 +43,15 @@ class ThemeModeNotifier extends Notifier<ThemeMode> {
     try {
       _prefs ??= await SharedPreferences.getInstance();
       if (_disposed) return;
-      final saved = _decode(_prefs!.getInt(_kThemeModeKey));
+      var raw = _prefs!.getInt(_kThemeModeKey);
+      // Migração legado: primeira abertura após rebranding.
+      if (raw == null) {
+        raw = _prefs!.getInt(_kLegacyThemeModeKey);
+        if (raw != null) {
+          await _prefs!.setInt(_kThemeModeKey, raw);
+        }
+      }
+      final saved = _decode(raw);
       if (saved != state) {
         if (_disposed) return;
         state = saved;
@@ -66,31 +75,8 @@ class ThemeModeNotifier extends Notifier<ThemeMode> {
       debugPrintStack(stackTrace: stackTrace);
     }
   }
-
-  /// Atalho para alternância clara: escuro -> claro -> sistema -> escuro ...
-  Future<void> cycle() async {
-    final next = switch (state) {
-      ThemeMode.system => ThemeMode.light,
-      ThemeMode.light => ThemeMode.dark,
-      ThemeMode.dark => ThemeMode.system,
-    };
-    await setMode(next);
-  }
 }
 
 final themeModeProvider = NotifierProvider<ThemeModeNotifier, ThemeMode>(
   ThemeModeNotifier.new,
 );
-
-/// Helper para UI: label humano.
-String themeModeLabel(ThemeMode mode) => switch (mode) {
-  ThemeMode.system => 'Automático (sistema)',
-  ThemeMode.light => 'Claro',
-  ThemeMode.dark => 'Escuro',
-};
-
-IconData themeModeIcon(ThemeMode mode) => switch (mode) {
-  ThemeMode.system => Icons.brightness_auto_outlined,
-  ThemeMode.light => Icons.light_mode_outlined,
-  ThemeMode.dark => Icons.dark_mode_outlined,
-};

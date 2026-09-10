@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:horafolio/core/time/time_utils.dart';
+import 'package:oktaponto/core/time/time_utils.dart';
 
 void main() {
   test(

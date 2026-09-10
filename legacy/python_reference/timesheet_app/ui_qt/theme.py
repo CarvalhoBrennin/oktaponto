@@ -1,4 +1,4 @@
-"""Design system visual do HoraFolio.
+"""Design system visual do OktaPonto.
 
 O módulo concentra paleta, tipografia, espaçamento, raios, escala de DPI e o QSS
 completo da aplicação. As páginas devem preferir ``objectName``/propriedades Qt
@@ -79,7 +79,7 @@ def scaled(value: int | float) -> int:
 
 
 def apply_dark_theme(app: QApplication) -> None:
-    """Aplica o tema HoraFolio; nome legado mantido por compatibilidade."""
+    """Aplica o tema OktaPonto; nome legado mantido por compatibilidade."""
     global _SCALE
     screen = app.primaryScreen()
     if screen:

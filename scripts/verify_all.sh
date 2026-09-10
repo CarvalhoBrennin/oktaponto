@@ -37,10 +37,10 @@ echo '== Flutter bootstrap / generated code =='
   dart format --output=none --set-exit-if-changed .
   flutter analyze
   flutter test --coverage
-  if [[ -n "${HORAFOLIO_DEVICE_ID:-}" ]]; then
-    flutter test integration_test -d "$HORAFOLIO_DEVICE_ID"
+  if [[ -n "${OKTAPONTO_DEVICE_ID:-}" ]]; then
+    flutter test integration_test -d "$OKTAPONTO_DEVICE_ID"
   else
-    echo 'Integration test móvel não executado: defina HORAFOLIO_DEVICE_ID com um device/emulador.' >&2
+    echo 'Integration test móvel não executado: defina OKTAPONTO_DEVICE_ID com um device/emulador.' >&2
   fi
 )
 

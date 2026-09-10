@@ -76,7 +76,7 @@ Tesseract real:
 - parser reconheceu 08/06/2026 com 8:00, status ok/incluído.
 
 10. Primeira aplicação limpa do patch candidato sobre o ZIP original
-Origem: /mnt/data/horafolio-master-source.zip
+Origem: /mnt/data/oktaponto-master-source.zip
 - git apply --check: OK;
 - git apply: OK;
 - compileall: OK;

@@ -37,9 +37,9 @@ jobs:
           sdkmanager "platform-tools" "emulator" "platforms;android-36" "system-images;android-35;google_apis;x86_64"
           echo no | avdmanager create avd \
             --force \
-            --name horafolio_ci \
+            --name oktaponto_ci \
             --package "system-images;android-35;google_apis;x86_64"
-          nohup emulator -avd horafolio_ci \
+          nohup emulator -avd oktaponto_ci \
             -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim \
             > "$RUNNER_TEMP/emulator.log" 2>&1 &
           adb wait-for-device

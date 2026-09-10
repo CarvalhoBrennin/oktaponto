@@ -1,4 +1,4 @@
-"""Chrome superior da janela HoraFolio."""
+"""Chrome superior da janela OktaPonto."""
 
 from __future__ import annotations
 
@@ -15,7 +15,7 @@ class TitleBar(QWidget):
     settings_requested = Signal()
     shortcuts_requested = Signal()
 
-    def __init__(self, title: str = "HoraFolio", parent: QWidget | None = None) -> None:
+    def __init__(self, title: str = "OktaPonto", parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self.setObjectName("TitleBar")
         self._drag_offset: QPoint | None = None

@@ -1,8 +1,8 @@
-# Evolução do HoraFolio — backlog completo e plano de implementação
+# Evolução do OktaPonto — backlog completo e plano de implementação
 
 ## 1. Objetivo do produto
 
-O HoraFolio não deve virar um sistema de ponto completo. O objetivo é mais simples e mais valioso: **reduzir ao mínimo o trabalho manual necessário para transformar dados do Banco de Horas em um timesheet confiável e pronto para entregar**.
+O OktaPonto não deve virar um sistema de ponto completo. O objetivo é mais simples e mais valioso: **reduzir ao mínimo o trabalho manual necessário para transformar dados do Banco de Horas em um timesheet confiável e pronto para entregar**.
 
 A métrica principal de produto deve ser: **quantas decisões e cliques ainda são necessários por fechamento de mês**.
 

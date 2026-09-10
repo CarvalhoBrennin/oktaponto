@@ -1,15 +1,15 @@
-# Plano de Implementação — Migração do HoraFólio para Flutter Mobile
+# Plano de Implementação — Migração do OktaPonto para Flutter Mobile
 
 > Documento executivo e técnico para ser entregue, junto com o ZIP do projeto atual, a outro ChatGPT/Codex ou desenvolvedor responsável pela migração.
 >
 > **Baseline da pesquisa:** 9 de setembro de 2026.  
 > **Decisões ausentes no requisito:** marcadas explicitamente como **não especificado**.
 >
-> [Baixar este plano completo em Markdown (.md)](sandbox:/mnt/data/PLANO_IMPLEMENTACAO_HORAFOLIO_FLUTTER.md)
+> [Baixar este plano completo em Markdown (.md)](sandbox:/mnt/data/PLANO_IMPLEMENTACAO_OKTAPONTO_FLUTTER.md)
 
 ## Resumo executivo
 
-O HoraFólio deve deixar de ser uma aplicação desktop que **interpreta uma fonte externa de ponto** e passar a ser a própria **fonte de verdade das batidas**. O produto final será um aplicativo pessoal, offline-first, para Android e iOS, com um fluxo deliberadamente pequeno:
+O OktaPonto deve deixar de ser uma aplicação desktop que **interpreta uma fonte externa de ponto** e passar a ser a própria **fonte de verdade das batidas**. O produto final será um aplicativo pessoal, offline-first, para Android e iOS, com um fluxo deliberadamente pequeno:
 
 ```text
 Registrar ponto
@@ -27,7 +27,7 @@ Gerar timesheet XLSX
 Compartilhar com o RH
 ```
 
-A análise do ZIP atual mostra que a migração não deve ser tratada como um simples porte de Python para Dart. O projeto existente tem **142 testes Python passando**, e a parte valiosa a preservar é principalmente o **contrato de negócio e de geração do Excel**. OCR, Tesseract, parsers de screenshot/espelho, importação de PDF e a interface PySide6 perdem a razão de existir quando o próprio HoraFólio registra o ponto.
+A análise do ZIP atual mostra que a migração não deve ser tratada como um simples porte de Python para Dart. O projeto existente tem **142 testes Python passando**, e a parte valiosa a preservar é principalmente o **contrato de negócio e de geração do Excel**. OCR, Tesseract, parsers de screenshot/espelho, importação de PDF e a interface PySide6 perdem a razão de existir quando o próprio OktaPonto registra o ponto.
 
 A recomendação de stack é:
 
@@ -543,7 +543,7 @@ O Drift oferece ferramentas para exportar schemas e testar migrations entre vers
 
 Essas versões foram verificadas nas páginas oficiais/registries dos respectivos projetos. `drift_dev 2.34.6` é o gerador atual da família Drift; `path_provider 2.1.6` fornece os diretórios de dados/temp do app; `flutter_local_notifications 22.3.0` é a linha estável atual para notificações locais; e `build_runner 2.16.1` é a versão pesquisada do sistema de codegen. citeturn20view1turn20view2turn20view0turn14search3
 
-`excel_plus 2.18.0` é a versão corrente pesquisada e declara suporte a criação/edição/estilo de `.xlsx`; versões recentes também adicionaram round-trip de freeze panes, visibilidade de gridlines, formatos e sanitização de controles XML ilegais. Isso cobre justamente vários elementos do contrato atual do HoraFólio. citeturn13search3turn17view0
+`excel_plus 2.18.0` é a versão corrente pesquisada e declara suporte a criação/edição/estilo de `.xlsx`; versões recentes também adicionaram round-trip de freeze panes, visibilidade de gridlines, formatos e sanitização de controles XML ilegais. Isso cobre justamente vários elementos do contrato atual do OktaPonto. citeturn13search3turn17view0
 
 Há, porém, um ponto de engenharia importante: o gerador Python já é maduro e validado enquanto `excel_plus` é uma dependência bem mais nova. Portanto:
 
@@ -1577,7 +1577,7 @@ A documentação da OpenAI também recomenda colocar convenções persistentes d
 Criar:
 
 ```markdown
-# HoraFólio engineering rules
+# OktaPonto engineering rules
 
 ## Scope
 
@@ -1626,7 +1626,7 @@ Isso também evita que documentação antiga ou arquivos do ZIP sejam tratados c
 **Prompt pronto para o outro ChatGPT/Codex**
 
 ```text
-Você é o engenheiro responsável por migrar o projeto HoraFólio do ZIP anexado
+Você é o engenheiro responsável por migrar o projeto OktaPonto do ZIP anexado
 de Python desktop para Flutter mobile.
 
 OBJETIVO
@@ -2004,7 +2004,7 @@ Se houver Git autenticado e autorização de escrita, abra um PR.
 
 Título:
 
-feat(mobile): migrate HoraFólio to offline Flutter time clock
+feat(mobile): migrate OktaPonto to offline Flutter time clock
 
 Inclua:
 
@@ -2052,7 +2052,7 @@ Considerando início em **14 de setembro de 2026**:
 
 ```mermaid
 gantt
-    title HoraFólio Flutter — cronograma sugerido
+    title OktaPonto Flutter — cronograma sugerido
     dateFormat YYYY-MM-DD
     axisFormat %d/%m
 
@@ -2102,7 +2102,7 @@ Android + iOS + QA aprovados
 Release candidata
 ```
 
-O resultado arquitetural esperado é, portanto, muito menor que o HoraFólio original:
+O resultado arquitetural esperado é, portanto, muito menor que o OktaPonto original:
 
 ```text
 ANTES

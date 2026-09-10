@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:horafolio/features/month_close/domain/monthly_close_validator.dart';
-import 'package:horafolio/features/punch/domain/models.dart';
-import 'package:horafolio/features/timesheet/data/timesheet_workbook_builder.dart';
+import 'package:oktaponto/features/month_close/domain/monthly_close_validator.dart';
+import 'package:oktaponto/features/punch/domain/models.dart';
+import 'package:oktaponto/features/timesheet/data/timesheet_workbook_builder.dart';
 
 Future<void> main(List<String> args) async {
   String? fixture;

@@ -2,10 +2,10 @@ import 'dart:io';
 
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:horafolio/core/database/app_database.dart';
-import 'package:horafolio/features/punch/data/drift_repositories.dart';
-import 'package:horafolio/features/punch/domain/models.dart';
-import 'package:horafolio/features/reminders/domain/reminder.dart';
+import 'package:oktaponto/core/database/app_database.dart';
+import 'package:oktaponto/features/punch/data/drift_repositories.dart';
+import 'package:oktaponto/features/punch/domain/models.dart';
+import 'package:oktaponto/features/reminders/domain/reminder.dart';
 
 void main() {
   late AppDatabase db;
@@ -32,8 +32,8 @@ void main() {
   });
 
   test('file-backed database survives close and reopen', () async {
-    final dir = await Directory.systemTemp.createTemp('horafolio_db_');
-    final path = '${dir.path}/horafolio.sqlite';
+    final dir = await Directory.systemTemp.createTemp('oktaponto_db_');
+    final path = '${dir.path}/oktaponto.sqlite';
     final firstDb = AppDatabase(executor: NativeDatabase(File(path)));
     final firstRepo = DriftPunchRepository(firstDb);
     await firstRepo.insert(

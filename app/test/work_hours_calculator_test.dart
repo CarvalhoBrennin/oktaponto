@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:horafolio/features/punch/domain/models.dart';
-import 'package:horafolio/features/punch/domain/work_hours_calculator.dart';
+import 'package:oktaponto/features/punch/domain/models.dart';
+import 'package:oktaponto/features/punch/domain/work_hours_calculator.dart';
 
 Punch p(int id, int hour, int minute, PunchKind kind) => Punch(
   id: id,

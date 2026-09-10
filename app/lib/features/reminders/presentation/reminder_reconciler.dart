@@ -1,12 +1,17 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/time/time_utils.dart';
 import '../../../providers/app_providers.dart';
+import 'reminder_hooks.dart';
 
 /// Reconciles persisted reminder intent with the operating-system schedule on
 /// startup. A failure does not block the time-clock app; it is logged and the
 /// next settings edit/startup retries reconciliation.
+///
+/// São duas reconciliações: os avisos recorrentes (jornada + lista manual) e o
+/// aviso de fim de intervalo, que pode ter ficado desatualizado se o usuário
+/// bateu o retorno com o app fechado ou se a jornada mudou no meio do dia.
 class ReminderReconciler extends ConsumerStatefulWidget {
   const ReminderReconciler({required this.child, super.key});
 
@@ -24,13 +29,9 @@ class _ReminderReconcilerState extends ConsumerState<ReminderReconciler> {
   }
 
   Future<void> _reconcile() async {
-    try {
-      final reminders = await ref.read(reminderRepositoryProvider).listAll();
-      await ref.read(notificationServiceProvider).rescheduleAll(reminders);
-    } catch (error, stackTrace) {
-      debugPrint('Falha ao reconciliar lembretes locais: $error');
-      debugPrintStack(stackTrace: stackTrace);
-    }
+    await refreshRecurringReminders(ref);
+    if (!mounted) return;
+    await refreshBreakReminder(ref, dateOnly(ref.read(clockProvider).now()));
   }
 
   @override

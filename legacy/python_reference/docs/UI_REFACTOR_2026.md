@@ -1,4 +1,4 @@
-# Refactor completo de UI/UX — HoraFolio 2026
+# Refactor completo de UI/UX — OktaPonto 2026
 
 ## Objetivo
 

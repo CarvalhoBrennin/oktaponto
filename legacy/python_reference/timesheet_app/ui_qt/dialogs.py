@@ -1,4 +1,4 @@
-"""Diálogos do HoraFolio: consistentes com o shell e orientados à tarefa."""
+"""Diálogos do OktaPonto: consistentes com o shell e orientados à tarefa."""
 
 from __future__ import annotations
 

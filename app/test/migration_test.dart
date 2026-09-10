@@ -1,6 +1,6 @@
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:horafolio/core/database/app_database.dart';
+import 'package:oktaponto/core/database/app_database.dart';
 
 void main() {
   test('schema v1 creates authoritative tables, indexes, FK and guards', () async {

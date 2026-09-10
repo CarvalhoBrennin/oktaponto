@@ -1,13 +1,33 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/design/hf_tokens.dart';
 import '../../../core/time/time_utils.dart';
+import '../../../core/ui/hf_errors.dart';
+import '../../../core/ui/hf_notice.dart';
+import '../../../core/ui/hf_section.dart';
+import '../../../core/ui/hf_states.dart';
 import '../../../providers/app_providers.dart';
+import '../../reminders/presentation/reminder_hooks.dart';
+import '../../schedule/presentation/schedule_provider.dart';
+import '../../settings/presentation/settings_button.dart';
 import '../domain/models.dart';
+import '../domain/workday_progress.dart';
+import 'widgets/live_journey.dart';
+import 'widgets/punch_button.dart';
+import 'widgets/time_hero.dart';
+import 'widgets/workday_timeline.dart';
 import 'work_day_editor.dart';
 
+/// Tela Hoje — a assinatura visual do OktaPonto.
+///
+/// A leitura foi desenhada para responder três perguntas em segundos: estou
+/// trabalhando agora, quanto já trabalhei e qual é o próximo passo. Daí a
+/// ordem herói de tempo → ação → linha da jornada, e daí o fato de nenhuma
+/// estatística mensal disputar espaço aqui.
 class TodayScreen extends ConsumerStatefulWidget {
   const TodayScreen({super.key});
 
@@ -70,27 +90,11 @@ class _TodayScreenState extends ConsumerState<TodayScreen>
     _scheduleMidnightRefresh();
   }
 
-  String _cta(int count) => switch (count) {
-    0 => 'Registrar entrada',
-    1 => 'Registrar saída',
-    2 => 'Registrar retorno',
-    3 => 'Registrar saída final',
-    _ => 'Dia completo',
-  };
-
-  String _status(WorkDayStatus status) => switch (status) {
-    WorkDayStatus.empty => 'Não iniciado',
-    WorkDayStatus.open => 'Trabalhando',
-    WorkDayStatus.paused => 'Intervalo',
-    WorkDayStatus.complete => 'Completo',
-    WorkDayStatus.invalid => 'Revisão necessária',
-  };
-
   Future<void> _register(DateTime today) async {
     if (_busy) return;
     _refreshCurrentDate();
     if (today != _today) {
-      setState(() => _error = 'A data mudou. Tente registrar novamente.');
+      setState(() => _error = 'O dia virou. Toque de novo para registrar.');
       return;
     }
     setState(() {
@@ -99,140 +103,187 @@ class _TodayScreenState extends ConsumerState<TodayScreen>
     });
     try {
       await ref.read(punchServiceProvider).registerNextPunch(today);
+      // Retorno tátil só no momento que importa: o ponto foi gravado.
+      unawaited(HapticFeedback.mediumImpact());
       ref.invalidate(daySummaryProvider(today));
       ref.invalidate(monthSummaryProvider(DateTime(today.year, today.month)));
+      // Sair para o intervalo arma o aviso de retorno; voltar cancela.
+      unawaited(refreshBreakReminder(ref, today));
     } catch (error) {
-      if (mounted) {
-        setState(
-          () => _error = error.toString().replaceFirst('Bad state: ', ''),
-        );
-      }
+      if (mounted) setState(() => _error = friendlyError(error));
     } finally {
       if (mounted) setState(() => _busy = false);
     }
   }
 
+  Future<void> _review() => showWorkDayEditor(context, ref, _today);
+
   @override
   Widget build(BuildContext context) {
     final today = _today;
+    final theme = Theme.of(context);
     final summary = ref.watch(daySummaryProvider(today));
+    final targetMinutes = ref.watch(dailyTargetMinutesProvider);
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Hoje')),
+      appBar: AppBar(
+        title: const Text('Hoje'),
+        actions: const [SettingsButton()],
+      ),
       body: RefreshIndicator(
-        onRefresh: () async {
+        onRefresh: () => guardedRefresh(() async {
           _refreshCurrentDate();
-          await ref.refresh(daySummaryProvider(_today).future);
-        },
+          return ref.refresh(daySummaryProvider(_today).future);
+        }),
         child: ListView(
-          padding: const EdgeInsets.all(20),
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.fromLTRB(
+            HfSpace.xl,
+            0,
+            HfSpace.xl,
+            HfSpace.giant,
+          ),
           children: [
             Text(
-              formatDateBr(today),
-              style: Theme.of(context).textTheme.titleMedium,
+              '${weekdayPt(today)} · ${dayAndMonthPt(today)}',
+              style: theme.textTheme.bodyMedium,
             ),
-            const SizedBox(height: 16),
-            if (_error != null)
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Text(
-                    _error!,
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.error,
-                    ),
-                  ),
-                ),
-              ),
+            const SizedBox(height: HfSpace.xxl),
             summary.when(
-              loading: () => const Center(
-                child: Padding(
-                  padding: EdgeInsets.all(40),
-                  child: CircularProgressIndicator(),
+              loading: _TodaySkeleton.new,
+              error: (error, _) => const Padding(
+                padding: EdgeInsets.only(top: HfSpace.huge),
+                child: HfNotice(
+                  tone: HfNoticeTone.error,
+                  title: 'Não foi possível carregar o dia',
+                  message:
+                      'Puxe a tela para baixo para tentar de novo. Seus '
+                      'registros continuam salvos no aparelho.',
                 ),
               ),
-              error: (error, _) => Text('Falha ao carregar o dia: $error'),
-              data: (day) => Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            _status(day.status),
-                            style: Theme.of(context).textTheme.headlineSmall,
-                          ),
-                          const SizedBox(height: 6),
-                          Text('Total: ${minutesToHhmm(day.workedMinutes)}'),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  for (var i = 0; i < day.punches.length; i++)
-                    Card(
-                      child: ListTile(
-                        leading: Icon(
-                          day.punches[i].kind == PunchKind.in_
-                              ? Icons.login
-                              : Icons.logout,
-                        ),
-                        title: Text(
-                          formatClock(day.punches[i].occurredAtLocal),
-                        ),
-                        subtitle: Text(
-                          day.punches[i].kind == PunchKind.in_
-                              ? 'Entrada'
-                              : 'Saída',
-                        ),
-                        trailing: day.punches[i].isEdited
-                            ? const Icon(Icons.edit, size: 18)
-                            : null,
-                      ),
-                    ),
-                  const SizedBox(height: 16),
-                  FilledButton.icon(
-                    onPressed:
-                        _busy ||
-                            day.punches.length >= 4 ||
-                            day.status == WorkDayStatus.invalid
-                        ? null
-                        : () => _register(today),
-                    icon: _busy
-                        ? const SizedBox.square(
-                            dimension: 18,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : const Icon(Icons.fingerprint),
-                    label: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      child: Text(_cta(day.punches.length)),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  OutlinedButton.icon(
-                    onPressed: () => showWorkDayEditor(context, ref, today),
-                    icon: const Icon(Icons.edit_calendar_outlined),
-                    label: const Text('Revisar / corrigir dia'),
-                  ),
-                  if (day.issues.isNotEmpty) ...[
-                    const SizedBox(height: 16),
-                    for (final issue in day.issues)
-                      Text(
-                        '• ${issue.message}',
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.error,
-                        ),
-                      ),
-                  ],
-                ],
+              data: (day) => LiveJourney(
+                day: day,
+                now: ref.read(clockProvider).now,
+                targetMinutes: targetMinutes,
+                builder: (context, progress) => _TodayBody(
+                  day: day,
+                  progress: progress,
+                  busy: _busy,
+                  error: _error,
+                  onRegister: () => _register(today),
+                  onReview: _review,
+                ),
               ),
             ),
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Corpo da tela Hoje.
+///
+/// Fica separado para que o contador vivo reconstrua só esta subárvore e para
+/// manter o `build` do estado legível.
+class _TodayBody extends StatelessWidget {
+  const _TodayBody({
+    required this.day,
+    required this.progress,
+    required this.busy,
+    required this.error,
+    required this.onRegister,
+    required this.onReview,
+  });
+
+  final WorkDaySummary day;
+  final WorkdayProgress progress;
+  final bool busy;
+  final String? error;
+  final VoidCallback onRegister;
+  final VoidCallback onReview;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final blocking = day.issues.where((issue) => issue.blocking).toList();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        TimeHero(progress: progress),
+        const SizedBox(height: HfSpace.huge),
+        if (error != null) ...[
+          HfNotice(tone: HfNoticeTone.error, message: error!),
+          const SizedBox(height: HfSpace.lg),
+        ],
+        // A pendência aparece onde ela acontece e já traz a saída.
+        if (blocking.isNotEmpty) ...[
+          HfNotice(
+            title: blocking.length == 1
+                ? 'Um registro precisa de atenção'
+                : '${blocking.length} registros precisam de atenção',
+            message: blocking.first.message,
+            actionLabel: 'Corrigir horário',
+            onAction: onReview,
+          ),
+          const SizedBox(height: HfSpace.lg),
+        ],
+        PunchButton(
+          progress: progress,
+          busy: busy,
+          onPressed: progress.canRegister ? onRegister : null,
+        ),
+        HfSection(
+          title: 'Jornada de hoje',
+          trailing: TextButton(
+            onPressed: onReview,
+            child: const Text('Corrigir'),
+          ),
+          child: WorkdayTimeline(
+            punches: day.punches,
+            progress: progress,
+            onEdit: (_) => onReview(),
+          ),
+        ),
+        if (day.punches.isEmpty)
+          Padding(
+            padding: const EdgeInsets.only(top: HfSpace.sm),
+            child: Text(
+              'Registre a entrada para o OktaPonto começar a acompanhar o dia.',
+              style: theme.textTheme.bodySmall,
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+/// Enquanto o dia carrega, a página mantém sua forma em vez de piscar um
+/// indicador no meio da tela.
+class _TodaySkeleton extends StatelessWidget {
+  const _TodaySkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Center(
+          child: HfSkeleton(
+            height: HfSize.heroDial,
+            width: HfSize.heroDial,
+            borderRadius: HfRadius.hero,
+          ),
+        ),
+        SizedBox(height: HfSpace.huge),
+        HfSkeleton(height: HfSize.primaryAction, borderRadius: HfRadius.large),
+        SizedBox(height: HfSpace.huge),
+        HfSkeletonRow(),
+        HfSkeletonRow(),
+        HfSkeletonRow(),
+        HfSkeletonRow(),
+      ],
     );
   }
 }

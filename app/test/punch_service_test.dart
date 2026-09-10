@@ -1,10 +1,10 @@
 import 'dart:async';
-
 import 'package:clock/clock.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:horafolio/features/punch/domain/models.dart';
-import 'package:horafolio/features/punch/domain/punch_service.dart';
-import 'package:horafolio/features/punch/domain/repositories.dart';
+import 'package:oktaponto/core/time/time_utils.dart';
+import 'package:oktaponto/features/punch/domain/models.dart';
+import 'package:oktaponto/features/punch/domain/punch_service.dart';
+import 'package:oktaponto/features/punch/domain/repositories.dart';
 
 class FakePunchRepository implements PunchRepository {
   final items = <Punch>[];
@@ -32,8 +32,12 @@ class FakePunchRepository implements PunchRepository {
   }
 
   @override
-  Future<List<Punch>> listDay(DateTime localDate) async =>
-      [...items]..sort((a, b) => a.occurredAtUtc.compareTo(b.occurredAtUtc));
+  Future<List<Punch>> listDay(DateTime localDate) async {
+    final key = localDateKey(localDate);
+    return [...items.where((p) => p.localDate == key)]
+      ..sort((a, b) => a.occurredAtUtc.compareTo(b.occurredAtUtc));
+  }
+
   @override
   Future<void> softDelete(int punchId) async =>
       items.removeWhere((p) => p.id == punchId);

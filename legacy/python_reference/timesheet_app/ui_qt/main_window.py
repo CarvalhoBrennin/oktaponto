@@ -1,4 +1,4 @@
-"""Janela principal do HoraFolio — shell, navegação e orquestração do fluxo."""
+"""Janela principal do OktaPonto — shell, navegação e orquestração do fluxo."""
 
 from __future__ import annotations
 
@@ -41,7 +41,7 @@ _WIN_H_FRAC = 0.86
 class MainWindow(QMainWindow):
     def __init__(self) -> None:
         super().__init__()
-        self.setWindowTitle("HoraFolio")
+        self.setWindowTitle("OktaPonto")
         self.setWindowFlags(Qt.Window | Qt.FramelessWindowHint)
 
         self.settings = load_settings()
@@ -64,7 +64,7 @@ class MainWindow(QMainWindow):
         outer.setContentsMargins(0, 0, 0, 0)
         outer.setSpacing(0)
 
-        self.title_bar = TitleBar("HoraFolio")
+        self.title_bar = TitleBar("OktaPonto")
         self.title_bar.settings_requested.connect(self._open_settings)
         self.title_bar.shortcuts_requested.connect(lambda: ShortcutDialog.show_shortcuts(self))
         outer.addWidget(self.title_bar)
@@ -75,7 +75,7 @@ class MainWindow(QMainWindow):
         workspace_layout.setSpacing(0)
 
         self.navigation = NavigationRail(_STEPS)
-        self.navigation.setAccessibleName("Navegação principal do HoraFolio")
+        self.navigation.setAccessibleName("Navegação principal do OktaPonto")
         self.navigation.step_clicked.connect(self._on_step_clicked)
         self.navigation.new_session_requested.connect(self._new_session)
         workspace_layout.addWidget(self.navigation)

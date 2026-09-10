@@ -1,4 +1,4 @@
--- HoraFólio SQLite schema contract — version 1
+-- OktaPonto SQLite schema contract — version 1
 -- Frozen on 2026-09-09. This is the human-reviewable migration baseline that
 -- must remain immutable once a later schema version is introduced.
 PRAGMA foreign_keys = ON;

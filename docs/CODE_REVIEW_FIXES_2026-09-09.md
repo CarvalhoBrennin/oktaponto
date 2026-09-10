@@ -55,7 +55,7 @@ A release deve usar:
 
 ```bash
 cd app
-HORAFOLIO_DEVICE_ID=<device-id> ./tool/release_gate.sh
+OKTAPONTO_DEVICE_ID=<device-id> ./tool/release_gate.sh
 ```
 
 O script exige, sem bypass silencioso:

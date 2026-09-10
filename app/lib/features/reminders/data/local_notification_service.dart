@@ -3,7 +3,19 @@ import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:timezone/data/latest_all.dart' as tz_data;
 import 'package:timezone/timezone.dart' as tz;
 
+import '../../schedule/domain/schedule_reminders.dart';
 import '../domain/reminder.dart';
+
+/// Faixas de identificador das notificações.
+///
+/// Os avisos recorrentes são recriados a cada reagendamento; o de fim de
+/// intervalo nasce de uma batida real e precisa sobreviver a esse ciclo, então
+/// mora numa faixa própria que o reagendamento não toca.
+const _manualBase = 0;
+const _scheduleBase = 800000;
+const _dynamicBase = 900000;
+const _breakDueId = _dynamicBase;
+const _breakFollowUpId = _dynamicBase + 1;
 
 final class LocalNotificationService {
   LocalNotificationService._();
@@ -15,6 +27,17 @@ final class LocalNotificationService {
   bool _timezoneReady = false;
   Object? _timezoneError;
 
+  static const _details = NotificationDetails(
+    android: AndroidNotificationDetails(
+      'oktaponto_reminders',
+      'Lembretes de ponto',
+      channelDescription: 'Lembretes configurados para registrar o ponto.',
+      importance: Importance.high,
+      priority: Priority.high,
+    ),
+    iOS: DarwinNotificationDetails(),
+  );
+
   Future<void> initialize() async {
     if (!_pluginInitialized) {
       const android = AndroidInitializationSettings('@mipmap/ic_launcher');
@@ -23,8 +46,20 @@ final class LocalNotificationService {
         requestBadgePermission: false,
         requestSoundPermission: false,
       );
+      const windows = WindowsInitializationSettings(
+        appName: 'OktaPonto',
+        appUserModelId: 'com.oktaponto.app',
+        guid: 'a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d',
+      );
+      const linux = LinuxInitializationSettings(defaultActionName: 'Abrir');
       await _plugin.initialize(
-        settings: const InitializationSettings(android: android, iOS: ios),
+        settings: const InitializationSettings(
+          android: android,
+          iOS: ios,
+          macOS: ios,
+          windows: windows,
+          linux: linux,
+        ),
       );
       _pluginInitialized = true;
     }
@@ -86,44 +121,126 @@ final class LocalNotificationService {
     await _plugin.cancelAll();
   }
 
-  Future<void> rescheduleAll(List<ReminderConfig> reminders) async {
+  /// Recria todos os avisos recorrentes: os da jornada e os da lista manual.
+  ///
+  /// Os dois convivem porque passam pelo mesmo agendador; se cada um chamasse
+  /// `cancelAll` por conta própria, o último a rodar apagaria os do outro.
+  Future<void> rescheduleAll(
+    List<ReminderConfig> reminders, {
+    List<ScheduleReminder> scheduleReminders = const [],
+    int scheduleWeekdaysMask = 0,
+  }) async {
     await initialize();
     final enabled = reminders.where((item) => item.enabled).toList();
-    if (enabled.isNotEmpty) {
+    if (enabled.isNotEmpty || scheduleReminders.isNotEmpty) {
       await _requireTimezone();
     }
-    await _plugin.cancelAll();
+    await _cancelRecurring();
     for (final reminder in enabled) {
       await schedule(reminder);
+    }
+    for (final reminder in scheduleReminders) {
+      await _scheduleFromWorkday(reminder, scheduleWeekdaysMask);
+    }
+  }
+
+  /// Limpa só a faixa recorrente, preservando o aviso de fim de intervalo que
+  /// possa estar pendente para o dia de hoje.
+  Future<void> _cancelRecurring() async {
+    final pending = await _plugin.pendingNotificationRequests();
+    for (final request in pending) {
+      if (request.id >= _manualBase && request.id < _dynamicBase) {
+        await _plugin.cancel(id: request.id);
+      }
     }
   }
 
   Future<void> schedule(ReminderConfig reminder) async {
     await _requireTimezone();
+    await _scheduleWeekly(
+      idBase: reminder.id * 10,
+      mask: reminder.weekdaysMask,
+      hour: reminder.hour,
+      minute: reminder.minute,
+      body: reminder.label,
+    );
+  }
+
+  Future<void> _scheduleFromWorkday(
+    ScheduleReminder reminder,
+    int weekdaysMask,
+  ) async {
+    await _requireTimezone();
+    await _scheduleWeekly(
+      idBase: _scheduleBase + reminder.slot * 10,
+      mask: weekdaysMask,
+      hour: reminder.hour,
+      minute: reminder.minute,
+      body: reminder.message,
+    );
+  }
+
+  Future<void> _scheduleWeekly({
+    required int idBase,
+    required int mask,
+    required int hour,
+    required int minute,
+    required String body,
+  }) async {
     for (var weekday = DateTime.monday; weekday <= DateTime.sunday; weekday++) {
-      if (!reminder.includesWeekday(weekday)) continue;
-      final id = reminder.id * 10 + weekday;
-      final when = _nextWeekdayTime(weekday, reminder.hour, reminder.minute);
+      if ((mask & (1 << (weekday - 1))) == 0) continue;
       await _plugin.zonedSchedule(
-        id: id,
-        title: 'HoraFólio',
-        body: reminder.label,
-        scheduledDate: when,
-        notificationDetails: const NotificationDetails(
-          android: AndroidNotificationDetails(
-            'horafolio_reminders',
-            'Lembretes de ponto',
-            channelDescription:
-                'Lembretes configurados para registrar o ponto.',
-            importance: Importance.high,
-            priority: Priority.high,
-          ),
-          iOS: DarwinNotificationDetails(),
-        ),
+        id: idBase + weekday,
+        title: 'OktaPonto',
+        body: body,
+        scheduledDate: _nextWeekdayTime(weekday, hour, minute),
+        notificationDetails: _details,
         androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
         matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
       );
     }
+  }
+
+  /// Agenda o aviso de fim de intervalo a partir da batida real.
+  ///
+  /// São dois disparos: o do horário exato e uma única insistência, para o
+  /// caso de o primeiro passar batido. Ambos são cancelados assim que o
+  /// retorno é registrado.
+  Future<void> scheduleBreakReminder(BreakReminderPlan plan) async {
+    await _requireTimezone();
+    await cancelBreakReminder();
+    final now = tz.TZDateTime.now(tz.local);
+    Future<void> arm(int id, DateTime when, String body) async {
+      final target = tz.TZDateTime.from(when, tz.local);
+      // Um horário já vencido não é reagendado: o plugin dispararia na hora e
+      // o usuário levaria um susto ao abrir o app.
+      if (!target.isAfter(now)) return;
+      await _plugin.zonedSchedule(
+        id: id,
+        title: 'OktaPonto',
+        body: body,
+        scheduledDate: target,
+        notificationDetails: _details,
+        androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+      );
+    }
+
+    await arm(
+      _breakDueId,
+      plan.dueAt,
+      'Seu intervalo terminou. Registre o retorno.',
+    );
+    await arm(
+      _breakFollowUpId,
+      plan.followUpAt,
+      'O retorno do intervalo ainda não foi registrado.',
+    );
+  }
+
+  Future<void> cancelBreakReminder() async {
+    await initialize();
+    await _plugin.cancel(id: _breakDueId);
+    await _plugin.cancel(id: _breakFollowUpId);
   }
 
   tz.TZDateTime _nextWeekdayTime(int weekday, int hour, int minute) {

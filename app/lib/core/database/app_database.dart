@@ -130,7 +130,18 @@ class AppDatabase extends _$AppDatabase {
   static QueryExecutor _openConnection() {
     return LazyDatabase(() async {
       final directory = await getApplicationSupportDirectory();
-      final file = File(p.join(directory.path, 'horafolio.sqlite'));
+      final file = File(p.join(directory.path, 'oktaponto.sqlite'));
+      final legacyFile = File(p.join(directory.path, 'horafolio.sqlite'));
+      if (!await file.exists() && await legacyFile.exists()) {
+        try {
+          await legacyFile.copy(file.path);
+        } catch (e) {
+          // ignore: avoid_print
+          // ignore: avoid_print
+          // ignore for linter
+          // ignore unused
+        }
+      }
       return NativeDatabase.createInBackground(file);
     });
   }

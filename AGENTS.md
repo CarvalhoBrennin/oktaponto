@@ -1,4 +1,4 @@
-# HoraFólio engineering rules
+# OktaPonto engineering rules
 
 ## Scope
 - Work only inside this repository.

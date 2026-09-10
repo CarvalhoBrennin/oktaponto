@@ -29,8 +29,13 @@ def atomic_write_via_path(target: str | Path, writer: Callable[[Path], None]) ->
         # abrupta do sistema ainda pode deixar os bytes apenas no cache do SO.
         # Sincronizar o temporário antes da troca torna sessão/config/XLSX muito
         # mais resistentes a desligamento ou crash no pior momento.
-        with temp_path.open("rb") as handle:
-            os.fsync(handle.fileno())
+        # Em Windows, fsync de arquivo temporário pode falhar com Bad file descriptor
+        # se o handle já foi sincronizado pelo writer (ex: openpyxl fecha) — best-effort.
+        try:
+            with temp_path.open("rb") as handle:
+                os.fsync(handle.fileno())
+        except OSError:
+            pass
         os.replace(temp_path, target)
         # Em POSIX, sincronizar o diretório ajuda a persistir a própria troca de
         # nome. Nem todo filesystem aceita fsync de diretório, então é best-effort.

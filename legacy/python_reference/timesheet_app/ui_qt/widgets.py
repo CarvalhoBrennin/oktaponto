@@ -1,4 +1,4 @@
-"""Componentes reutilizáveis da interface HoraFolio.
+"""Componentes reutilizáveis da interface OktaPonto.
 
 A intenção deste módulo é manter as páginas declarativas: componentes visuais,
 ícones, navegação, banners, métricas e feedback ficam centralizados aqui.

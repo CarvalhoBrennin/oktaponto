@@ -287,7 +287,7 @@ final class TimesheetWorkbookBuilder {
           right: _thin,
           top: _thin,
           bottom: _thin,
-          numberFormat: NumFormat.custom(formatCode: '[h]:mm'),
+          numberFormat: const CustomNumericNumFormat(formatCode: '[h]:mm'),
         ),
       );
       _text(sheet, 'D$excelRow', profile.employeeName, base);
@@ -366,7 +366,7 @@ final class TimesheetWorkbookBuilder {
         right: _mediumHeader,
         top: _mediumHeader,
         bottom: _mediumHeader,
-        numberFormat: NumFormat.custom(formatCode: '[h]:mm'),
+        numberFormat: const CustomNumericNumFormat(formatCode: '[h]:mm'),
       ),
     );
     for (var col = 3; col < 7; col++) {
