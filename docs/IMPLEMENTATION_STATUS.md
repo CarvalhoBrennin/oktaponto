@@ -11,6 +11,7 @@ Data da revisão/hardening: 2026-09-09.
 - Validação fail-closed de ordem temporal, tipos, overnight e total >24h.
 - Edição, inclusão manual, soft-delete e trilha de auditoria.
 - Tela Hoje com rollover de meia-noite/resume, Histórico, editor de dia, Mês e Configurações.
+- Banco de horas mensal derivado das batidas, com horas extras, saldo líquido e movimentações por dia.
 - Perfil, atividade padrão e override diário.
 - Lembretes com permissão explícita, timezone fail-closed, rollback e reconciliação de startup.
 - Reset de banco + exports + notificações + invalidação de estado.

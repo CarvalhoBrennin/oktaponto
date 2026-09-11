@@ -12,6 +12,7 @@ import '../features/punch/domain/repositories.dart';
 import '../features/punch/domain/work_hours_calculator.dart';
 import '../features/reminders/data/local_notification_service.dart';
 import '../features/reminders/domain/reminder.dart';
+import '../features/schedule/presentation/schedule_provider.dart';
 import '../features/settings/domain/data_reset_service.dart';
 import '../features/timesheet/data/excel_timesheet_exporter.dart';
 import '../features/timesheet/data/share_service.dart';
@@ -81,9 +82,10 @@ final daySummaryProvider = FutureProvider.family<WorkDaySummary, DateTime>((
 ) async {
   final punches = await ref.watch(punchRepositoryProvider).listDay(date);
   final metadata = await ref.watch(workDayRepositoryProvider).getDay(date);
+  final schedule = ref.watch(workScheduleProvider);
   return ref
       .watch(workHoursCalculatorProvider)
-      .calculate(date, punches, metadata);
+      .calculate(date, punches, metadata, schedule: schedule);
 });
 
 final monthSummaryProvider = FutureProvider.family<MonthSummary, DateTime>((
@@ -108,6 +110,7 @@ final monthSummaryProvider = FutureProvider.family<MonthSummary, DateTime>((
   final keys = <String>{...punchGroups.keys, ...metaByDay.keys}.toList()
     ..sort();
   final calculator = ref.watch(workHoursCalculatorProvider);
+  final schedule = ref.watch(workScheduleProvider);
   final days = <WorkDaySummary>[];
   for (final key in keys) {
     final local = parseLocalDate(key);
@@ -116,6 +119,7 @@ final monthSummaryProvider = FutureProvider.family<MonthSummary, DateTime>((
         local,
         punchGroups[key] ?? const <Punch>[],
         metaByDay[key] ?? WorkDayMetadata(localDate: key),
+        schedule: schedule,
       ),
     );
   }

@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:oktaponto/app.dart';
 import 'package:oktaponto/core/database/app_database.dart';
 import 'package:oktaponto/core/theme/app_theme.dart';
+import 'package:oktaponto/features/bank_hours/presentation/bank_hours_screen.dart';
 import 'package:oktaponto/features/history/presentation/history_screen.dart';
 import 'package:oktaponto/features/month_close/presentation/month_screen.dart';
 import 'package:oktaponto/features/punch/domain/models.dart';
@@ -109,6 +110,7 @@ void main() {
 
   final screens = <String, Widget Function()>{
     'Histórico': HistoryScreen.new,
+    'Banco de horas': BankHoursScreen.new,
     'Fechamento': MonthScreen.new,
     'Configurações': SettingsScreen.new,
   };

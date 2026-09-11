@@ -38,6 +38,11 @@ void main() {
     await tester.pump(const Duration(milliseconds: 400));
     expect(find.text('Histórico'), findsWidgets);
 
+    await tester.tap(find.byIcon(Icons.account_balance_wallet_outlined).last);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+    expect(find.text('Banco de horas'), findsWidgets);
+
     await tester.tap(find.byIcon(Icons.description_outlined).last);
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 400));

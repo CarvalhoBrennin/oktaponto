@@ -4,7 +4,7 @@ Migração integral do OktaPonto desktop para Flutter, offline-first, com as **b
 
 ## Fluxo
 
-`Entrada → Saída → Retorno → Saída final → Revisão → Fechamento → XLSX → Compartilhar`
+`Entrada → Saída → Retorno → Saída final → Revisão → Banco de horas → Fechamento → XLSX → Compartilhar`
 
 ## Estrutura
 

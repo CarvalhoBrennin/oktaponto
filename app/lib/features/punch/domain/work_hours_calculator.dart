@@ -1,13 +1,15 @@
 import '../../../core/time/time_utils.dart';
 import '../../../core/validation/punch_sequence_validator.dart';
+import '../../schedule/domain/work_schedule.dart';
 import 'models.dart';
 
 abstract interface class WorkHoursCalculator {
   WorkDaySummary calculate(
     DateTime date,
     List<Punch> punches,
-    WorkDayMetadata metadata,
-  );
+    WorkDayMetadata metadata, {
+    WorkSchedule? schedule,
+  });
 }
 
 final class DefaultWorkHoursCalculator implements WorkHoursCalculator {
@@ -21,8 +23,9 @@ final class DefaultWorkHoursCalculator implements WorkHoursCalculator {
   WorkDaySummary calculate(
     DateTime date,
     List<Punch> punches,
-    WorkDayMetadata metadata,
-  ) {
+    WorkDayMetadata metadata, {
+    WorkSchedule? schedule,
+  }) {
     // Validate the repository/input order before sorting. Sorting first would
     // hide corrupt or out-of-order source data, which must fail closed.
     final issues = [...sequenceValidator.validate(punches)];
@@ -75,6 +78,15 @@ final class DefaultWorkHoursCalculator implements WorkHoursCalculator {
             _ => WorkDayStatus.invalid,
           };
 
+    final targetMinutes = schedule?.isValid == true
+        ? (schedule!.includesWeekday(date.weekday) ? schedule.targetMinutes : 0)
+        : null;
+    final balanceMinutes = status == WorkDayStatus.complete &&
+            !issues.any((issue) => issue.blocking) &&
+            targetMinutes != null
+        ? workedMinutes - targetMinutes
+        : null;
+
     return WorkDaySummary(
       date: dateOnly(date),
       punches: List.unmodifiable(sorted),
@@ -84,6 +96,8 @@ final class DefaultWorkHoursCalculator implements WorkHoursCalculator {
       activity: metadata.activity,
       note: metadata.note,
       issues: List.unmodifiable(issues),
+      targetMinutes: targetMinutes,
+      balanceMinutes: balanceMinutes,
     );
   }
 }

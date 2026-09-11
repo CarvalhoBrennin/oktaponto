@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:oktaponto/core/database/app_database.dart';
 import 'package:oktaponto/features/punch/domain/models.dart';
+import 'package:oktaponto/features/schedule/domain/work_schedule.dart';
+import 'package:oktaponto/features/schedule/presentation/schedule_provider.dart';
 import 'package:oktaponto/providers/app_providers.dart';
 
 void main() {
@@ -11,12 +13,16 @@ void main() {
     () async {
       final db = AppDatabase(executor: NativeDatabase.memory());
       final container = ProviderContainer(
-        overrides: [databaseProvider.overrideWithValue(db)],
+        overrides: [
+          databaseProvider.overrideWithValue(db),
+          scheduleSetupProvider.overrideWith(() => _FixedScheduleNotifier()),
+        ],
       );
       addTearDown(() async {
         container.dispose();
         await db.close();
       });
+      await container.read(scheduleSetupProvider.future);
       final repo = container.read(punchRepositoryProvider);
       await repo.insert(
         PunchDraft(
@@ -55,6 +61,17 @@ void main() {
       );
       expect(summary.workedMinutes, 480);
       expect(summary.status, WorkDayStatus.complete);
+      expect(summary.targetMinutes, 480);
+      expect(summary.balanceMinutes, 0);
+      expect(summary.overtimeMinutes, 0);
     },
+  );
+}
+
+class _FixedScheduleNotifier extends ScheduleSetupNotifier {
+  @override
+  Future<ScheduleSetup> build() async => const ScheduleSetup(
+    onboardingSeen: true,
+    schedule: WorkSchedule.defaults,
   );
 }

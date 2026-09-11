@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/design/hf_tokens.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/theme_provider.dart';
+import 'features/bank_hours/presentation/bank_hours_screen.dart';
 import 'features/history/presentation/history_screen.dart';
 import 'features/month_close/presentation/month_screen.dart';
 import 'features/onboarding/presentation/onboarding_screen.dart';
@@ -55,11 +56,16 @@ class _Entry extends ConsumerWidget {
   }
 }
 
-/// Destinos principais, na ordem da narrativa do produto:
-/// o agora, o que já passou e o fechamento do mês.
+/// Main destinations in the product narrative order: today, history, bank,
+/// and month closing.
 enum _Destination {
   today('Hoje', Icons.schedule_outlined, Icons.schedule_rounded),
   history('Histórico', Icons.calendar_month_outlined, Icons.calendar_month),
+  bankHours(
+    'Banco',
+    Icons.account_balance_wallet_outlined,
+    Icons.account_balance_wallet,
+  ),
   close('Fechamento', Icons.description_outlined, Icons.description);
 
   const _Destination(this.label, this.icon, this.selectedIcon);
@@ -81,7 +87,12 @@ class _AppShellState extends State<AppShell> {
 
   // IndexedStack preserva o estado de cada aba (mês selecionado, rolagem)
   // entre trocas — o usuário volta ao Histórico onde havia parado.
-  static const _pages = <Widget>[TodayScreen(), HistoryScreen(), MonthScreen()];
+  static const _pages = <Widget>[
+    TodayScreen(),
+    HistoryScreen(),
+    BankHoursScreen(),
+    MonthScreen(),
+  ];
 
   void _select(int value) => setState(() => _index = value);
 
