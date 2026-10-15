@@ -14,9 +14,12 @@ import '../../../core/ui/hf_states.dart';
 import '../../../providers/app_providers.dart';
 import '../../punch/domain/models.dart';
 import '../../punch/presentation/work_day_editor.dart';
+import '../../schedule/presentation/schedule_provider.dart';
 import '../../settings/presentation/settings_button.dart';
 import '../../timesheet/domain/timesheet_source_signature.dart';
+import '../domain/workday_fill.dart';
 import '../domain/weekly_distribution.dart';
+import 'widgets/fill_missing_workdays_dialog.dart';
 import 'widgets/month_headline.dart';
 import 'widgets/weekly_hours_chart.dart';
 
@@ -122,6 +125,50 @@ class _MonthScreenState extends ConsumerState<MonthScreen> {
     }
   }
 
+  Future<void> _fillMissingDays(
+    List<DateTime> missingDays,
+    WorkdayFillPattern initialPattern,
+  ) async {
+    if (_busy || missingDays.isEmpty) return;
+    final pattern = await showDialog<WorkdayFillPattern>(
+      context: context,
+      builder: (context) => FillMissingWorkdaysDialog(
+        dayCount: missingDays.length,
+        initialPattern: initialPattern,
+      ),
+    );
+    if (pattern == null || !mounted) return;
+
+    setState(() {
+      _busy = true;
+      _error = null;
+    });
+    try {
+      await ref.read(punchServiceProvider).addManualPunchBatch([
+        for (final date in missingDays)
+          ManualPunchBatchDay(date: date, localTimes: pattern.timesFor(date)),
+      ]);
+      if (!mounted) return;
+      for (final date in missingDays) {
+        ref.invalidate(daySummaryProvider(date));
+      }
+      ref.invalidate(monthSummaryProvider(_month));
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            '${missingDays.length} ${missingDays.length == 1 ? 'dia preenchido' : 'dias preenchidos'} com horários editáveis.',
+          ),
+        ),
+      );
+    } catch (error) {
+      if (!mounted) return;
+      setState(() => _error = friendlyError(error));
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final asyncMonth = ref.watch(monthSummaryProvider(_month));
@@ -166,6 +213,13 @@ class _MonthScreenState extends ConsumerState<MonthScreen> {
                 final validation = ref
                     .watch(monthlyValidatorProvider)
                     .validate(month);
+                final schedule = ref.watch(workScheduleProvider);
+                final fillPattern = WorkdayFillPattern.fromSchedule(schedule);
+                final missingDays = missingScheduledWorkdays(
+                  month: month,
+                  schedule: schedule,
+                  now: ref.read(clockProvider).now(),
+                );
                 final currentProfile = asyncProfile.asData?.value;
                 final exportIsCurrent =
                     _lastExport != null &&
@@ -179,11 +233,14 @@ class _MonthScreenState extends ConsumerState<MonthScreen> {
                   validation: validation,
                   busy: _busy,
                   error: _error,
+                  missingDays: missingDays,
                   lastExport: exportIsCurrent ? _lastExport : null,
                   exportIsStale: _lastExport != null && !exportIsCurrent,
                   onExport: () => _export(month),
                   onShare: _shareCurrent,
                   onOpenDay: (date) => showWorkDayEditor(context, ref, date),
+                  onFillMissingDays: () =>
+                      _fillMissingDays(missingDays, fillPattern),
                   onRefresh: () => guardedRefresh(
                     () async =>
                         ref.refresh(monthSummaryProvider(_month).future),
@@ -205,11 +262,13 @@ class _MonthCloseBody extends StatelessWidget {
     required this.validation,
     required this.busy,
     required this.error,
+    required this.missingDays,
     required this.lastExport,
     required this.exportIsStale,
     required this.onExport,
     required this.onShare,
     required this.onOpenDay,
+    required this.onFillMissingDays,
     required this.onRefresh,
   });
 
@@ -218,11 +277,13 @@ class _MonthCloseBody extends StatelessWidget {
   final MonthValidationResult validation;
   final bool busy;
   final String? error;
+  final List<DateTime> missingDays;
   final TimesheetGenerationResult? lastExport;
   final bool exportIsStale;
   final VoidCallback onExport;
   final VoidCallback onShare;
   final Future<void> Function(DateTime date) onOpenDay;
+  final Future<void> Function() onFillMissingDays;
   final Future<void> Function() onRefresh;
 
   /// Dias incluídos no timesheet que ainda não fecham.
@@ -280,6 +341,54 @@ class _MonthCloseBody extends StatelessWidget {
                 title: 'Distribuição por semana',
                 child: WeeklyHoursChart(weeks: weeks),
               ),
+          ],
+          if (missingDays.isNotEmpty)
+            HfSection(
+              title: 'Dias úteis sem batidas',
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    '${missingDays.length} ${missingDays.length == 1 ? 'dia útil está' : 'dias úteis estão'} sem registros até ontem.',
+                    style: theme.textTheme.bodyMedium,
+                  ),
+                  const SizedBox(height: HfSpace.sm),
+                  const HfNotice(
+                    tone: HfNoticeTone.info,
+                    message:
+                        'O preenchimento usa quatro horários por dia. Dias '
+                        'com alguma batida ou excluídos do timesheet ficam '
+                        'como estão; os novos horários podem ser editados '
+                        'depois no Histórico.',
+                  ),
+                  if (error != null && !hasAnyRecord) ...[
+                    const SizedBox(height: HfSpace.md),
+                    HfNotice(tone: HfNoticeTone.error, message: error!),
+                  ],
+                  const SizedBox(height: HfSpace.md),
+                  SizedBox(
+                    height: HfSize.primaryAction,
+                    child: FilledButton.icon(
+                      onPressed: busy ? null : onFillMissingDays,
+                      icon: busy
+                          ? const SizedBox.square(
+                              dimension: 18,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2.2,
+                              ),
+                            )
+                          : const Icon(Icons.auto_fix_high_outlined),
+                      label: Text(
+                        busy
+                            ? 'Preenchendo...'
+                            : 'Preencher ${missingDays.length} ${missingDays.length == 1 ? 'dia' : 'dias'}',
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          if (hasAnyRecord) ...[
             if (pending.isNotEmpty)
               HfSection(
                 title: pending.length == 1

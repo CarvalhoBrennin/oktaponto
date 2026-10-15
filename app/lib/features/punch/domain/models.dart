@@ -57,6 +57,17 @@ final class PunchDraft {
   final bool isEdited;
 }
 
+/// Horários locais de um dia que será preenchido em lote.
+///
+/// A operação aceita apenas dias ainda sem batidas e grava os quatro horários
+/// como correções manuais, com a mesma validação e auditoria das edições.
+final class ManualPunchBatchDay {
+  const ManualPunchBatchDay({required this.date, required this.localTimes});
+
+  final DateTime date;
+  final List<DateTime> localTimes;
+}
+
 final class PunchEdit {
   const PunchEdit({
     required this.id,
@@ -222,14 +233,12 @@ final class MonthSummary {
       days.where((day) => day.isEligibleForBankHours).length;
 
   /// Complete bank-hour days with positive balance, ordered chronologically.
-  List<WorkDaySummary> get daysWithOvertime => _sortedBankDays(
-    (day) => day.overtimeMinutes > 0,
-  );
+  List<WorkDaySummary> get daysWithOvertime =>
+      _sortedBankDays((day) => day.overtimeMinutes > 0);
 
   /// Complete bank-hour days with negative balance, ordered chronologically.
-  List<WorkDaySummary> get daysWithDeficit => _sortedBankDays(
-    (day) => (day.balanceMinutes ?? 0) < 0,
-  );
+  List<WorkDaySummary> get daysWithDeficit =>
+      _sortedBankDays((day) => (day.balanceMinutes ?? 0) < 0);
 
   List<WorkDaySummary> _sortedBankDays(
     bool Function(WorkDaySummary day) predicate,

@@ -51,6 +51,15 @@ if manifest.exists():
 gradle = root / "android/app/build.gradle.kts"
 if gradle.exists():
     text = gradle.read_text(encoding="utf-8")
+    application_id_pattern = r'applicationId\s*=\s*"[^"]+"'
+    if not re.search(application_id_pattern, text):
+        raise RuntimeError("Generated Android applicationId was not found.")
+    text = re.sub(
+        application_id_pattern,
+        'applicationId = "com.oktaponto.app"',
+        text,
+        count=1,
+    )
     text = text.replace("compileSdk = flutter.compileSdkVersion", "compileSdk = 36")
     text = text.replace("minSdk = flutter.minSdkVersion", "minSdk = 24")
     text = text.replace("targetSdk = flutter.targetSdkVersion", "targetSdk = 36")
@@ -88,7 +97,7 @@ if wrapper.exists():
     text = wrapper.read_text(encoding="utf-8")
     text = re.sub(
         r"gradle-[0-9.]+-(bin|all)\.zip",
-        lambda match: f"gradle-8.13-{match.group(1)}.zip",
+        lambda match: f"gradle-9.3.1-{match.group(1)}.zip",
         text,
     )
     write(wrapper, text)

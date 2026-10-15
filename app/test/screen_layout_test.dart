@@ -189,6 +189,11 @@ void main() {
       findsOneWidget,
     );
     // A exportação continua bloqueada enquanto houver pendência.
+    await tester.scrollUntilVisible(
+      find.text('Gerar timesheet'),
+      200,
+      scrollable: find.byType(Scrollable),
+    );
     final button = tester.widget<FilledButton>(
       find.widgetWithText(FilledButton, 'Gerar timesheet'),
     );
@@ -196,6 +201,36 @@ void main() {
 
     await tester.pumpWidget(const SizedBox.shrink());
     await tester.pump(const Duration(milliseconds: 50));
+  });
+
+  testWidgets('o fechamento permite ajustar o preenchimento dos dias vazios', (
+    tester,
+  ) async {
+    final fixture = await _fixture();
+    addTearDown(() async {
+      fixture.container.dispose();
+      await fixture.database.close();
+    });
+    await _pump(
+      tester,
+      fixture.container,
+      const MonthScreen(),
+      size: _regular,
+      theme: AppTheme.light,
+    );
+
+    expect(
+      find.text('4 dias úteis estão sem registros até ontem.'),
+      findsOneWidget,
+    );
+    await tester.tap(find.widgetWithText(FilledButton, 'Preencher 4 dias'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Horas trabalhadas'), findsOneWidget);
+    expect(find.text('Duração do almoço'), findsOneWidget);
+    expect(find.textContaining('Saída final às 18:00.'), findsOneWidget);
+    await tester.tap(find.widgetWithText(TextButton, 'Cancelar'));
+    await tester.pumpAndSettle();
   });
 
   testWidgets('o histórico lista os dias registrados do mês', (tester) async {

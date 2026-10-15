@@ -2,7 +2,7 @@
 
 | Decisão | Status | Implementação conservadora |
 |---|---|---|
-| applicationId Android | não especificado | bootstrap usa `com.oktaponto.app` apenas para build sem signing |
+| applicationId Android | `com.oktaponto.app` | preservado do APK 2.0.0 para permitir atualização sem trocar de aplicativo |
 | Bundle ID iOS | não especificado | bootstrap usa `com.oktaponto.app` apenas para build sem signing |
 | Publicação Play Store | não especificado | fora do CI inicial |
 | Publicação App Store | não especificado | fora do CI inicial |

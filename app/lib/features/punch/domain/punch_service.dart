@@ -8,6 +8,7 @@ import 'repositories.dart';
 abstract interface class PunchService {
   Future<Punch> registerNextPunch(DateTime localDate);
   Future<Punch> addManualPunch(DateTime localDate, DateTime localTime);
+  Future<int> addManualPunchBatch(List<ManualPunchBatchDay> days);
   Future<void> editPunch(PunchEdit edit);
   Future<void> deletePunch(int punchId, DateTime localDate);
 }
@@ -82,52 +83,89 @@ final class DefaultPunchService implements PunchService {
 
   @override
   Future<Punch> addManualPunch(DateTime localDate, DateTime localTime) {
+    return repository.transaction(
+      (transactionalRepository) =>
+          _addManualPunch(transactionalRepository, localDate, localTime),
+    );
+  }
+
+  /// Registra vários dias vazios como uma única operação atômica.
+  ///
+  /// Cada dia precisa conter as quatro batidas em ordem. Se qualquer horário
+  /// for inválido, a transação inteira é revertida pelo repositório.
+  @override
+  Future<int> addManualPunchBatch(List<ManualPunchBatchDay> days) {
+    if (days.isEmpty) return Future<int>.value(0);
     return repository.transaction((transactionalRepository) async {
-      final punches = await transactionalRepository.listDay(localDate);
-      if (punches.length >= 4) {
-        throw StateError('O dia já possui quatro batidas.');
+      var inserted = 0;
+      for (final day in days) {
+        if (day.localTimes.length != 4) {
+          throw StateError('Cada dia precisa ter quatro horários.');
+        }
+        if ((await transactionalRepository.listDay(day.date)).isNotEmpty) {
+          throw StateError(
+            'O dia ${localDateKey(day.date)} já possui batidas. '
+            'Atualize o mês antes de preencher novamente.',
+          );
+        }
+        for (final localTime in day.localTimes) {
+          await _addManualPunch(transactionalRepository, day.date, localTime);
+          inserted++;
+        }
       }
-      final normalizedLocal = DateTime(
-        localDate.year,
-        localDate.month,
-        localDate.day,
-        localTime.hour,
-        localTime.minute,
-        localTime.second,
-        localTime.millisecond,
-        localTime.microsecond,
-      );
-      // Use the offset at the manually selected wall-clock instant. Reusing
-      // the first punch offset can be wrong on daylight-saving transitions.
-      final offsetMinutes = normalizedLocal.timeZoneOffset.inMinutes;
-      final occurredAtUtc = wallClockToUtc(normalizedLocal, offsetMinutes);
-      final insertionIndex = punches
-          .where((punch) => punch.occurredAtUtc.isBefore(occurredAtUtc))
-          .length;
-      final kind = insertionIndex.isEven ? PunchKind.in_ : PunchKind.out;
-      final draft = PunchDraft(
-        localDate: localDateKey(localDate),
-        occurredAtUtc: occurredAtUtc,
-        utcOffsetMinutes: offsetMinutes,
-        kind: kind,
-        isEdited: true,
-      );
-      final candidate = Punch(
-        id: -1,
-        occurredAtUtc: draft.occurredAtUtc,
-        localDate: draft.localDate,
-        utcOffsetMinutes: draft.utcOffsetMinutes,
-        kind: draft.kind,
-        isEdited: true,
-      );
-      final next = [...punches, candidate]
-        ..sort((a, b) => a.occurredAtUtc.compareTo(b.occurredAtUtc));
-      final issues = sequenceValidator.validate(next);
-      if (issues.any((issue) => issue.blocking)) {
-        throw StateError(issues.first.message);
-      }
-      return transactionalRepository.insert(draft);
+      return inserted;
     });
+  }
+
+  Future<Punch> _addManualPunch(
+    PunchRepository target,
+    DateTime localDate,
+    DateTime localTime,
+  ) async {
+    final punches = await target.listDay(localDate);
+    if (punches.length >= 4) {
+      throw StateError('O dia já possui quatro batidas.');
+    }
+    final normalizedLocal = DateTime(
+      localDate.year,
+      localDate.month,
+      localDate.day,
+      localTime.hour,
+      localTime.minute,
+      localTime.second,
+      localTime.millisecond,
+      localTime.microsecond,
+    );
+    // Use the offset at the manually selected wall-clock instant. Reusing
+    // the first punch offset can be wrong on daylight-saving transitions.
+    final offsetMinutes = normalizedLocal.timeZoneOffset.inMinutes;
+    final occurredAtUtc = wallClockToUtc(normalizedLocal, offsetMinutes);
+    final insertionIndex = punches
+        .where((punch) => punch.occurredAtUtc.isBefore(occurredAtUtc))
+        .length;
+    final kind = insertionIndex.isEven ? PunchKind.in_ : PunchKind.out;
+    final draft = PunchDraft(
+      localDate: localDateKey(localDate),
+      occurredAtUtc: occurredAtUtc,
+      utcOffsetMinutes: offsetMinutes,
+      kind: kind,
+      isEdited: true,
+    );
+    final candidate = Punch(
+      id: -1,
+      occurredAtUtc: draft.occurredAtUtc,
+      localDate: draft.localDate,
+      utcOffsetMinutes: draft.utcOffsetMinutes,
+      kind: draft.kind,
+      isEdited: true,
+    );
+    final next = [...punches, candidate]
+      ..sort((a, b) => a.occurredAtUtc.compareTo(b.occurredAtUtc));
+    final issues = sequenceValidator.validate(next);
+    if (issues.any((issue) => issue.blocking)) {
+      throw StateError(issues.first.message);
+    }
+    return target.insert(draft);
   }
 
   @override

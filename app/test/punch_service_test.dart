@@ -187,6 +187,65 @@ void main() {
     expect(inserted.occurredAtUtc, DateTime.utc(2026, 9, 1, 15));
   });
 
+  test('manual batch fills empty days with four editable punches', () async {
+    final repo = FakePunchRepository();
+    final service = DefaultPunchService(repository: repo);
+    final date = DateTime(2026, 9, 1);
+
+    final inserted = await service.addManualPunchBatch([
+      ManualPunchBatchDay(
+        date: date,
+        localTimes: [
+          DateTime(2026, 9, 1, 9),
+          DateTime(2026, 9, 1, 12),
+          DateTime(2026, 9, 1, 13),
+          DateTime(2026, 9, 1, 18),
+        ],
+      ),
+    ]);
+
+    expect(inserted, 4);
+    expect(repo.items.map((punch) => punch.kind), [
+      PunchKind.in_,
+      PunchKind.out,
+      PunchKind.in_,
+      PunchKind.out,
+    ]);
+    expect(repo.items.every((punch) => punch.isEdited), isTrue);
+    expect(repo.items.map((punch) => punch.occurredAtLocal.hour), [
+      9,
+      12,
+      13,
+      18,
+    ]);
+  });
+
+  test(
+    'manual batch refuses to change a day that already has a punch',
+    () async {
+      final repo = FakePunchRepository();
+      final service = DefaultPunchService(repository: repo);
+      final date = DateTime(2026, 9, 1);
+      await service.addManualPunch(date, DateTime(2026, 9, 1, 8));
+
+      await expectLater(
+        service.addManualPunchBatch([
+          ManualPunchBatchDay(
+            date: date,
+            localTimes: [
+              DateTime(2026, 9, 1, 9),
+              DateTime(2026, 9, 1, 12),
+              DateTime(2026, 9, 1, 13),
+              DateTime(2026, 9, 1, 18),
+            ],
+          ),
+        ]),
+        throwsStateError,
+      );
+      expect(repo.items, hasLength(1));
+    },
+  );
+
   test('editing into an impossible temporal sequence is rejected', () async {
     final repo = FakePunchRepository();
     repo.items.addAll([

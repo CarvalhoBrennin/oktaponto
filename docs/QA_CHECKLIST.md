@@ -11,6 +11,7 @@
 - [ ] tentar ordem temporal impossível
 - [ ] excluir punch e reconstruir por correção manual
 - [ ] navegar mês anterior
+- [ ] preencher dias úteis vazios em lote, ajustar jornada/intervalo e editar uma batida no Histórico
 - [ ] validar mês vazio e dia incompleto
 - [ ] confirmar bloqueio de fechamento/exportação inválida
 - [ ] atividade padrão e override diário
