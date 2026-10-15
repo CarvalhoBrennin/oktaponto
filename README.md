@@ -21,7 +21,6 @@ O projeto mantém `applicationId`/Bundle ID definitivos como decisão **não esp
 ```bash
 cd app
 ./tool/bootstrap_platforms.sh
-flutter pub get
 dart run build_runner build --delete-conflicting-outputs
 ```
 
@@ -46,6 +45,7 @@ Ou manualmente:
 
 ```bash
 cd app
+./tool/bootstrap_platforms.sh
 dart format --output=none --set-exit-if-changed .
 flutter analyze
 flutter test --coverage
@@ -74,6 +74,7 @@ Também existe o workflow manual `Render Flutter goldens`, que produz os PNGs em
 
 ```bash
 cd app
+./tool/bootstrap_platforms.sh
 flutter build apk --release
 flutter build appbundle --release
 # em macOS

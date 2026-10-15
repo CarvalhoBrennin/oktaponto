@@ -17,4 +17,6 @@ fi
 if [[ ! -d android || ! -d ios ]]; then
   flutter create --platforms=android,ios --org com.oktaponto --project-name oktaponto .
 fi
+flutter pub get
 python3 tool/configure_platforms.py
+dart run flutter_launcher_icons
