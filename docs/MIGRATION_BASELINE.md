@@ -8,7 +8,7 @@ Baseline executado em 2026-09-09.
 - Dependências declaradas: Pillow >=10, openpyxl >=3.1, PySide6 >=6.6, pdfplumber >=0.11.
 - Implementação original preservada integralmente em `legacy/python_reference/`.
 - O código e os testes atuais são a especificação primária do XLSX.
-- Divergência conhecida: `assets/brenno_abril_2026_referencia.xlsx` contém células diárias antigas em `h:mm`, enquanto o gerador/testes atuais exigem `[h]:mm`, inclusive para 24:00 e totais acumulados.
+- Divergência histórica: a planilha pessoal de referência, removida por privacidade, usava formato diário h:mm; o contrato atual exige [h]:mm, inclusive para 24:00 e totais acumulados.
 
 ## Ambiente desta implementação
 

@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../core/database/app_database.dart';
 import '../core/files/file_service.dart';
 import '../core/time/time_utils.dart';
+import '../features/bank_hours/data/excel_overtime_report_exporter.dart';
+import '../features/bank_hours/domain/overtime_report_exporter.dart';
 import '../features/month_close/domain/monthly_close_validator.dart';
 import '../features/punch/data/drift_repositories.dart';
 import '../features/punch/domain/models.dart';
@@ -55,6 +57,10 @@ final timesheetExporterProvider = Provider<TimesheetExporter>(
     validator: ref.watch(monthlyValidatorProvider),
     fileService: ref.watch(fileServiceProvider),
   ),
+);
+final overtimeReportExporterProvider = Provider<OvertimeReportExporter>(
+  (ref) =>
+      ExcelOvertimeReportExporter(fileService: ref.watch(fileServiceProvider)),
 );
 final shareServiceProvider = Provider<FileShareService>(
   (ref) => const NativeFileShareService(),

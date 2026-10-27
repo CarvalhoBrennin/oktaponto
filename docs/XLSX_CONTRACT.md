@@ -18,3 +18,21 @@ O exporter Dart deve preservar o contrato executável de `legacy/python_referenc
 - Nunca sobrescrever arquivo já existente.
 
 `python scripts/xlsx_contract.py arquivo.xlsx` normaliza o workbook em JSON; `compare_xlsx_contract.py` compara semanticamente.
+
+## Extrato de horas extras
+
+O extrato é um segundo arquivo XLSX, separado do timesheet. Ele não adiciona
+abas nem colunas ao contrato acima.
+
+- Worksheet `Horas extras`, com linhas congeladas até o cabeçalho.
+- Competência e período exibidos no topo.
+- Resumo com total de horas extras e dias com saldo positivo.
+- Uma linha por dia completo e consistente, com as quatro batidas, horas
+  trabalhadas, meta diária e horas extras derivadas.
+- Duração armazenada como valor numérico do Excel e formatada como `[h]:mm`.
+- Dias incompletos ficam fora do total e são contados no aviso do extrato.
+- Batidas inconsistentes, dias duplicados ou resumos desatualizados bloqueiam
+  a exportação.
+- O relatório apura somente minutos acima da meta diária configurada; não
+  estima pagamento em dinheiro nem altera o banco de horas ou o timesheet.
+- Nunca sobrescrever arquivo já existente.

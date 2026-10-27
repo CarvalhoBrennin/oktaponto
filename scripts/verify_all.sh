@@ -9,6 +9,9 @@ echo '== Legacy Python oracle =='
   python -m unittest discover -s tests
 )
 
+echo '== Native platform bootstrap =='
+python -m unittest discover -s app/tool -p 'test_*.py'
+
 echo '== XLSX Python oracle =='
 mkdir -p app/build
 python scripts/generate_reference_fixture.py \

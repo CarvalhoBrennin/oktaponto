@@ -58,22 +58,8 @@ Destaques:
 - UI não permite contornar pendências pelo stepper/restauração da etapa Excel;
 - scripts Windows/Linux validam Python >=3.11 e propagam falhas.
 
-9. Validação funcional na árvore criada pelo patch candidato
-Origem: assets/brenno_abril_2026_referencia.xlsx
-- parse/consolidação: 20 registros;
-- elegíveis: 20;
-- pendências: 0;
-- total: 157:50;
-- possíveis dias úteis ausentes: 03/04/2026 e 21/04/2026 (feriados ausentes do arquivo, limitação documentada);
-- XLSX gerado/reaberto via openpyxl: OK;
-- atividade padrão: OK;
-- horas diárias e total em [h]:mm: OK;
-- CLI com espelho: 20 dias / 157:50: OK.
-
-Tesseract real:
-- health check: tesseract 5.5.0 · idioma(s): por+eng;
-- imagem sintética 1500x850: 13 palavras / 8 linhas / 103 caracteres / 0 warnings;
-- parser reconheceu 08/06/2026 com 8:00, status ok/incluído.
+9. Privacidade da evidência histórica
+A validação manual anterior usava uma planilha identificável, removida da árvore por privacidade. As verificações reproduzíveis permanecem nas suítes e fixtures sintéticas.
 
 10. Primeira aplicação limpa do patch candidato sobre o ZIP original
 Origem: /mnt/data/oktaponto-master-source.zip

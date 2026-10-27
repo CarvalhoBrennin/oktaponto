@@ -169,9 +169,8 @@ Esta rodada partiu do patch já revisado, mas repetiu a análise procurando prin
 - fuzz de deserialização: **5.000** payloads de registro malformados + **1.000** formatos de sessão inválidos sem crash.
 - fuzz de consolidação: **800** cenários automáticos válidos, amostrando permutações de ordem, com resultado invariável.
 - Tesseract real: `5.5.0`, `por+eng` disponível; na segunda rodada uma imagem sintética legível retornou **13 palavras / 8 linhas**, sem warnings, e foi parseada como `08/06/2026 · 8:00`.
-- Espelho de referência `assets/brenno_abril_2026_referencia.xlsx`: **20 registros**, **20 elegíveis**, **157:50**, sem status `revisar`.
+- A planilha histórica de referência foi removida por privacidade; os casos sintéticos e o contrato XLSX versionado permanecem como validação reproduzível.
 - geração/reabertura XLSX via openpyxl: OK; atividade padrão, dia da semana, total, formato diário `[h]:mm` e proteção contra fórmula conferidos.
-- CLI com espelho de referência: **20 dias / 157:50**.
 - patch completo aplicado sobre uma extração nova do ZIP original: OK; **133/133 unittest + 133/133 pytest**, reverse-check, AST e smokes funcionais OK.
 - a validação em árvore limpa também detectou e descartou uma versão preliminar do artefato que não continha arquivos novos untracked; o patch foi regenerado incluindo explicitamente esses arquivos antes da entrega.
 

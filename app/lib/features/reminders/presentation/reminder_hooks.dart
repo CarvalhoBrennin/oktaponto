@@ -5,12 +5,16 @@ import '../../../providers/app_providers.dart';
 import '../../schedule/presentation/schedule_provider.dart';
 import '../domain/reminder_sync.dart';
 
-/// Reagenda todos os avisos recorrentes a partir do estado atual.
+/// Reschedules all recurring reminders from the current state.
 ///
-/// Chamado sempre que a jornada ou a lista manual muda. Falha aqui nunca
-/// interrompe o fluxo do usuário: o ponto já foi gravado, e o próximo início
-/// do app reconcilia.
-Future<void> refreshRecurringReminders(WidgetRef ref) async {
+/// Called whenever the work schedule or manual reminder list changes. By
+/// default, failures are logged so the next app launch can reconcile without
+/// interrupting the current flow. Screens that need to roll back a persisted
+/// change can request that failures be rethrown.
+Future<void> refreshRecurringReminders(
+  WidgetRef ref, {
+  bool rethrowOnFailure = false,
+}) async {
   try {
     final manual = await ref.read(reminderRepositoryProvider).listAll();
     final setup = await ref.read(scheduleSetupProvider.future);
@@ -21,13 +25,19 @@ Future<void> refreshRecurringReminders(WidgetRef ref) async {
     );
   } catch (error, stackTrace) {
     logReminderFailure(error, stackTrace);
+    if (rethrowOnFailure) {
+      throw StateError(
+        'Não foi possível atualizar os lembretes. Tente novamente; '
+        'se o problema continuar, confira as permissões do aparelho.',
+      );
+    }
   }
 }
 
-/// Acerta o aviso de fim de intervalo depois de mexer nas batidas de [date].
+/// Updates the break reminder after punches on [date] change.
 ///
-/// Só o dia de hoje arma aviso; corrigir uma quarta-feira passada não deve
-/// programar notificação nenhuma.
+/// Only today can arm a reminder; correcting a past day must not schedule a
+/// notification.
 Future<void> refreshBreakReminder(WidgetRef ref, DateTime date) async {
   try {
     final now = ref.read(clockProvider).now();

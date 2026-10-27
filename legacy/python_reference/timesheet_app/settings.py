@@ -64,9 +64,9 @@ def load_settings() -> AppSettings:
     profile_raw = data.get("profile")
     profile_data = profile_raw if isinstance(profile_raw, dict) else {}
     profile = ProfileConfig(
-        colaborador=_as_text(profile_data.get("colaborador"), "").strip() or "Brenno C. Torquato",
-        cargo=_as_text(profile_data.get("cargo"), "").strip() or "Desenvolvedor Jr",
-        modalidade=_as_text(profile_data.get("modalidade"), "").strip() or "Presencial",
+        colaborador=_as_text(profile_data.get("colaborador"), "").strip(),
+        cargo=_as_text(profile_data.get("cargo"), "").strip(),
+        modalidade=_as_text(profile_data.get("modalidade"), "").strip(),
         atividade_padrao=_as_text(profile_data.get("atividade_padrao"), "").strip(),
     )
 

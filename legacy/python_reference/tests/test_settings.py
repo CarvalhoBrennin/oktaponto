@@ -71,7 +71,9 @@ class SettingsTest(unittest.TestCase):
             path.write_text("[]", encoding="utf-8")
             with patch("timesheet_app.settings.get_config_path", return_value=path):
                 loaded = load_settings()
-            self.assertEqual(loaded.profile.colaborador, "Brenno C. Torquato")
+            self.assertEqual(loaded.profile.colaborador, "")
+            self.assertEqual(loaded.profile.cargo, "")
+            self.assertEqual(loaded.profile.modalidade, "")
 
     def test_invalid_nested_shapes_and_unknown_boole_use_defaults(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -102,8 +104,9 @@ class SettingsTest(unittest.TestCase):
                 settings = load_settings()
         self.assertEqual(settings.tesseract_cmd, "")
         self.assertEqual(settings.tesseract_lang, "por+eng")
-        self.assertEqual(settings.profile.colaborador, "Brenno C. Torquato")
-        self.assertEqual(settings.profile.cargo, "Desenvolvedor Jr")
+        self.assertEqual(settings.profile.colaborador, "")
+        self.assertEqual(settings.profile.cargo, "")
+        self.assertEqual(settings.profile.modalidade, "")
         self.assertTrue(settings.automation.autosave_session)  # padrão, não truthiness da lista
         self.assertEqual(settings.automation.output_dir, "")
 

@@ -24,9 +24,9 @@ def build_parser() -> argparse.ArgumentParser:
     output.add_argument("--output-dir", help="Pasta de saída; gera automaticamente um arquivo por mês.")
     parser.add_argument("--tesseract-cmd", default="", help="Caminho do executável Tesseract.")
     parser.add_argument("--tesseract-lang", default="por+eng", help="Idiomas do Tesseract. Padrão: por+eng.")
-    parser.add_argument("--colaborador", default="Brenno C. Torquato")
-    parser.add_argument("--cargo", default="Desenvolvedor Jr")
-    parser.add_argument("--modalidade", default="Presencial")
+    parser.add_argument("--colaborador", default="")
+    parser.add_argument("--cargo", default="")
+    parser.add_argument("--modalidade", default="")
     parser.add_argument("--atividade-padrao", default="", help="Texto padrão da coluna Atividades / Entregas.")
     return parser
 

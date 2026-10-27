@@ -110,7 +110,11 @@ class _MonthScreenState extends ConsumerState<MonthScreen> {
       }
       await ref
           .read(shareServiceProvider)
-          .shareXlsx(export.outputPath, monthYear: export.monthYear);
+          .shareXlsx(
+            export.outputPath,
+            subject: 'Folha de ponto - ${export.monthYear}',
+            text: 'Folha de ponto de ${export.monthYear}',
+          );
     } catch (error) {
       if (!mounted) return;
       setState(() {

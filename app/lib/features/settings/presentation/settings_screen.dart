@@ -70,9 +70,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   void _showMessage(String message) {
     if (!mounted) return;
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
   }
 
   void _showError(Object error) => _showMessage(friendlyError(error));
@@ -143,7 +142,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       }
       savedId = await repo.save(result);
       ref.invalidate(remindersProvider);
-      await refreshRecurringReminders(ref);
+      await refreshRecurringReminders(ref, rethrowOnFailure: true);
     } catch (error) {
       // Roll back persisted intent when OS scheduling fails. Only attempt a
       // rollback if the pre-change snapshot was loaded successfully.
@@ -177,7 +176,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       await repo.delete(reminder.id);
       deleted = true;
       ref.invalidate(remindersProvider);
-      await refreshRecurringReminders(ref);
+      await refreshRecurringReminders(ref, rethrowOnFailure: true);
     } catch (error) {
       if (snapshotLoaded) {
         if (deleted) {

@@ -109,6 +109,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       _saving = true;
       _error = null;
     });
+    var scheduleSaved = false;
     try {
       if (_name.text.trim().isNotEmpty || _job.text.trim().isNotEmpty) {
         final current = ref.read(profileProvider).value;
@@ -132,10 +133,17 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         schedule = schedule.copyWith(remindersEnabled: false);
       }
       await ref.read(scheduleSetupProvider.notifier).save(schedule);
+      scheduleSaved = true;
       if (!mounted) return;
-      await refreshRecurringReminders(ref);
+      await refreshRecurringReminders(ref, rethrowOnFailure: true);
     } catch (error) {
-      if (mounted) setState(() => _error = friendlyError(error));
+      if (mounted) {
+        final message = scheduleSaved
+            ? 'A jornada foi salva, mas os lembretes não foram atualizados. '
+                  '${friendlyError(error)}'
+            : friendlyError(error);
+        setState(() => _error = message);
+      }
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -537,6 +545,12 @@ class _RemindersPage extends StatelessWidget {
             title: const Text('Avisar na hora de bater o ponto'),
           ),
           if (schedule.remindersEnabled) ...[
+            const SizedBox(height: HfSpace.md),
+            Text(
+              'No Android, o sistema pode atrasar avisos para economizar '
+              'bateria.',
+              style: theme.textTheme.bodySmall,
+            ),
             const SizedBox(height: HfSpace.xl),
             Text('DIAS DE TRABALHO', style: theme.textTheme.labelSmall),
             const SizedBox(height: HfSpace.md),

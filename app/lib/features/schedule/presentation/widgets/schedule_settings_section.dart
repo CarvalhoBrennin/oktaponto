@@ -79,9 +79,11 @@ class ScheduleSettingsSection extends ConsumerWidget {
       if (denied) schedule = schedule.copyWith(remindersEnabled: false);
     }
 
+    var scheduleSaved = false;
     try {
       await ref.read(scheduleSetupProvider.notifier).save(schedule);
-      await refreshRecurringReminders(ref);
+      scheduleSaved = true;
+      await refreshRecurringReminders(ref, rethrowOnFailure: true);
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -94,9 +96,12 @@ class ScheduleSettingsSection extends ConsumerWidget {
       );
     } catch (error) {
       if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(friendlyError(error))));
+        final message = scheduleSaved
+            ? 'A jornada foi salva, mas os lembretes não foram atualizados. '
+                  '${friendlyError(error)}'
+            : friendlyError(error);
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(message)));
       }
     }
   }
@@ -262,6 +267,14 @@ class _ScheduleSheetState extends State<_ScheduleSheet> {
             title: const Text('Avisar na hora de bater o ponto'),
           ),
           if (_schedule.remindersEnabled) ...[
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: HfSpace.md),
+              child: Text(
+                'No Android, o sistema pode atrasar avisos para economizar '
+                'bateria.',
+                style: theme.textTheme.bodySmall,
+              ),
+            ),
             const SizedBox(height: HfSpace.md),
             WeekdayPickerField(
               mask: _schedule.weekdaysMask,

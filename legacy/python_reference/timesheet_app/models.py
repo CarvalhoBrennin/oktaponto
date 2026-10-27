@@ -188,9 +188,9 @@ class TimesheetRecord:
 
 @dataclass(slots=True)
 class ProfileConfig:
-    colaborador: str = "Brenno C. Torquato"
-    cargo: str = "Desenvolvedor Jr"
-    modalidade: str = "Presencial"
+    colaborador: str = ""
+    cargo: str = ""
+    modalidade: str = ""
     atividade_padrao: str = ""
 
 

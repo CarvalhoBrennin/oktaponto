@@ -156,8 +156,26 @@ if app_delegate.exists():
     text = app_delegate.read_text(encoding="utf-8")
     if "import UserNotifications" not in text:
         text = text.replace("import Flutter", "import Flutter\nimport UserNotifications")
-    marker = "GeneratedPluginRegistrant.register(with: self)"
-    delegate = "UNUserNotificationCenter.current().delegate = self"
-    if marker in text and delegate not in text:
-        text = text.replace(marker, delegate + "\n    " + marker)
+    delegate = (
+        "UNUserNotificationCenter.current().delegate = "
+        "self as UNUserNotificationCenterDelegate"
+    )
+    if delegate not in text:
+        application_body = re.search(
+            r"(override\s+func\s+application\([\s\S]*?\)\s*->\s*Bool\s*\{\s*\n)",
+            text,
+        )
+        if application_body:
+            text = (
+                text[: application_body.end()]
+                + f"    {delegate}\n"
+                + text[application_body.end() :]
+            )
+        else:
+            marker = "GeneratedPluginRegistrant.register(with: self)"
+            if marker not in text:
+                raise RuntimeError(
+                    f"Could not configure notification delegate in {app_delegate}"
+                )
+            text = text.replace(marker, delegate + "\n    " + marker, 1)
     write(app_delegate, text)

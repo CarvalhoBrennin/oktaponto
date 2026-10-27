@@ -815,9 +815,9 @@ class SettingsDialog(_BaseDialog):
             tesseract_cmd=self.edit_tesseract.text().strip(),
             tesseract_lang=self.edit_lang.text().strip() or "por+eng",
             profile=ProfileConfig(
-                colaborador=self.edit_colaborador.text().strip() or "Brenno C. Torquato",
-                cargo=self.edit_cargo.text().strip() or "Desenvolvedor Jr",
-                modalidade=self.edit_modalidade.text().strip() or "Presencial",
+                colaborador=self.edit_colaborador.text().strip(),
+                cargo=self.edit_cargo.text().strip(),
+                modalidade=self.edit_modalidade.text().strip(),
                 atividade_padrao=self.edit_atividade_padrao.text().strip(),
             ),
             automation=AutomationConfig(

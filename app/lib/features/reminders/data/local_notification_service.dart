@@ -23,6 +23,7 @@ final class LocalNotificationService {
   static final instance = LocalNotificationService._();
   final FlutterLocalNotificationsPlugin _plugin =
       FlutterLocalNotificationsPlugin();
+  Future<void> _rescheduleQueue = Future<void>.value();
   bool _pluginInitialized = false;
   bool _timezoneReady = false;
   Object? _timezoneError;
@@ -121,38 +122,79 @@ final class LocalNotificationService {
     await _plugin.cancelAll();
   }
 
-  /// Recria todos os avisos recorrentes: os da jornada e os da lista manual.
+  /// Synchronizes recurring reminders from both the work schedule and the
+  /// manual reminder list.
   ///
-  /// Os dois convivem porque passam pelo mesmo agendador; se cada um chamasse
-  /// `cancelAll` por conta própria, o último a rodar apagaria os do outro.
+  /// Both sets share one scheduler, so independently calling `cancelAll`
+  /// would let the last caller erase the other set. Serialize reconciliations
+  /// so their scheduling and cleanup steps cannot interleave.
   Future<void> rescheduleAll(
     List<ReminderConfig> reminders, {
     List<ScheduleReminder> scheduleReminders = const [],
     int scheduleWeekdaysMask = 0,
+  }) {
+    final reminderSnapshot = List<ReminderConfig>.unmodifiable(reminders);
+    final scheduleSnapshot = List<ScheduleReminder>.unmodifiable(
+      scheduleReminders,
+    );
+    final operation = _rescheduleQueue.then<void>(
+      (_) => _applyReschedule(
+        reminderSnapshot,
+        scheduleReminders: scheduleSnapshot,
+        scheduleWeekdaysMask: scheduleWeekdaysMask,
+      ),
+    );
+    _rescheduleQueue = operation.catchError((Object _) {});
+    return operation;
+  }
+
+  Future<void> _applyReschedule(
+    List<ReminderConfig> reminders, {
+    required List<ScheduleReminder> scheduleReminders,
+    required int scheduleWeekdaysMask,
   }) async {
     await initialize();
     final enabled = reminders.where((item) => item.enabled).toList();
     if (enabled.isNotEmpty || scheduleReminders.isNotEmpty) {
       await _requireTimezone();
     }
-    await _cancelRecurring();
+    final desiredIds = <int>{};
     for (final reminder in enabled) {
+      desiredIds.addAll(
+        _weeklyIds(idBase: reminder.id * 10, mask: reminder.weekdaysMask),
+      );
       await schedule(reminder);
     }
     for (final reminder in scheduleReminders) {
+      desiredIds.addAll(
+        _weeklyIds(
+          idBase: _scheduleBase + reminder.slot * 10,
+          mask: scheduleWeekdaysMask,
+        ),
+      );
       await _scheduleFromWorkday(reminder, scheduleWeekdaysMask);
     }
+    await _cancelRecurringExcept(desiredIds);
   }
 
   /// Limpa só a faixa recorrente, preservando o aviso de fim de intervalo que
   /// possa estar pendente para o dia de hoje.
-  Future<void> _cancelRecurring() async {
+  Future<void> _cancelRecurringExcept(Set<int> retainedIds) async {
     final pending = await _plugin.pendingNotificationRequests();
     for (final request in pending) {
-      if (request.id >= _manualBase && request.id < _dynamicBase) {
+      if (request.id >= _manualBase &&
+          request.id < _dynamicBase &&
+          !retainedIds.contains(request.id)) {
         await _plugin.cancel(id: request.id);
       }
     }
+  }
+
+  Set<int> _weeklyIds({required int idBase, required int mask}) {
+    return {
+      for (var weekday = DateTime.monday; weekday <= DateTime.sunday; weekday++)
+        if ((mask & (1 << (weekday - 1))) != 0) idBase + weekday,
+    };
   }
 
   Future<void> schedule(ReminderConfig reminder) async {

@@ -176,7 +176,7 @@ deve preservar o suficiente para executar a suíte relevante e gerar workbooks d
 | P0 | `pyproject.toml` e `requirements*.txt` | dependências e baseline |
 | P0 | `timesheet_app/excel/generator.py` | contrato principal a portar |
 | P0 | `tests/test_excel_generator.py` | especificação executável do Excel |
-| P0 | `assets/brenno_abril_2026_referencia.xlsx` | fixture de referência |
+| P0 | Evidência XLSX histórica | Removida da árvore por privacidade; os testes atuais seguem como especificação executável |
 | P0 | `timesheet_app/models.py` | regras e `ProfileConfig` |
 | P0 | `timesheet_app/constants.py` | meses, dias, filenames |
 | P0 | `timesheet_app/file_utils.py` | escrita segura |
@@ -192,7 +192,7 @@ deve preservar o suficiente para executar a suíte relevante e gerar workbooks d
 | P2 | `timesheet_app/ui_qt/` | referência de UX, não arquitetura |
 | P2 | `timesheet_app/ocr/` e `parser/` | entender para aposentar |
 
-Durante a análise do ZIP, apareceu uma divergência que deve ser formalmente registrada: o arquivo `assets/brenno_abril_2026_referencia.xlsx` possui células diárias antigas com `h:mm`, enquanto o `generator.py` atual grava `[h]:mm`, e a suíte atual testa explicitamente a semântica que permite durações como `24:00`. Portanto, salvo decisão explícita em contrário, **o código e os testes atuais são a especificação primária; o asset antigo é evidência secundária**.
+A análise histórica registrou uma diferença de formato entre uma planilha de referência identificável e o gerador. A planilha foi removida por privacidade; o código e os testes atuais continuam como especificação primária do XLSX.
 
 Decisões ainda não definidas:
 
@@ -1687,7 +1687,7 @@ Antes de alterar código:
    - requirements*.txt
    - timesheet_app/excel/generator.py
    - tests/test_excel_generator.py
-   - assets/brenno_abril_2026_referencia.xlsx
+   - planilha histórica removida por privacidade
    - timesheet_app/models.py
    - timesheet_app/constants.py
    - timesheet_app/file_utils.py
