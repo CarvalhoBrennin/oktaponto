@@ -107,6 +107,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         notifications: ref.read(notificationServiceProvider),
         manualReminders: previous,
         schedule: ref.read(workScheduleProvider),
+        now: ref.read(clockProvider).now(),
       );
     } catch (_) {
       // Best effort. Startup reconciliation will retry from persisted state.

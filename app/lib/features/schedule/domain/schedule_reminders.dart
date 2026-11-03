@@ -1,3 +1,5 @@
+import '../../../core/time/national_holidays.dart';
+import '../../../core/time/time_utils.dart';
 import '../../punch/domain/models.dart';
 import '../../punch/domain/workday_progress.dart';
 import 'work_schedule.dart';
@@ -86,6 +88,54 @@ List<ScheduleReminder> plannedReminders(WorkSchedule schedule) {
   );
 
   return List.unmodifiable(reminders);
+}
+
+/// Quantos dias à frente os avisos da jornada são agendados.
+///
+/// Cada aviso vira um disparo pontual, e não uma recorrência semanal, para
+/// poder pular feriados. A janela só anda quando o app reconcilia, então ela
+/// precisa ser renovada ao abrir o app.
+const scheduleReminderHorizonDays = 14;
+
+/// Um aviso da jornada marcado para um dia e horário concretos.
+final class ScheduledReminderOccurrence {
+  const ScheduledReminderOccurrence({required this.reminder, required this.at});
+
+  final ScheduleReminder reminder;
+
+  /// Instante local do disparo, com a antecedência já aplicada.
+  final DateTime at;
+}
+
+/// Avisos da jornada que valem a partir de [now], nos próximos [days] dias.
+///
+/// Ficam de fora os dias fora da escala, os feriados nacionais e os horários
+/// que já passaram. A lista sai em ordem cronológica.
+List<ScheduledReminderOccurrence> upcomingScheduleReminders({
+  required WorkSchedule schedule,
+  required DateTime now,
+  int days = scheduleReminderHorizonDays,
+}) {
+  final reminders = plannedReminders(schedule);
+  final today = dateOnly(now);
+  final occurrences = <ScheduledReminderOccurrence>[];
+  for (var offset = 0; offset < days; offset++) {
+    final date = DateTime(today.year, today.month, today.day + offset);
+    if (!schedule.includesWeekday(date.weekday)) continue;
+    if (nationalHolidayOn(date) != null) continue;
+    for (final reminder in reminders) {
+      final at = DateTime(
+        date.year,
+        date.month,
+        date.day,
+        reminder.hour,
+        reminder.minute,
+      );
+      if (!at.isAfter(now)) continue;
+      occurrences.add(ScheduledReminderOccurrence(reminder: reminder, at: at));
+    }
+  }
+  return List.unmodifiable(occurrences);
 }
 
 /// Quando avisar que o intervalo em andamento acabou.

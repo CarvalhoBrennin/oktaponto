@@ -128,20 +128,21 @@ final class LocalNotificationService {
   /// Both sets share one scheduler, so independently calling `cancelAll`
   /// would let the last caller erase the other set. Serialize reconciliations
   /// so their scheduling and cleanup steps cannot interleave.
+  ///
+  /// Os da jornada são pontuais: um por dia e horário da janela calculada por
+  /// `upcomingScheduleReminders`. Os da lista manual continuam semanais.
   Future<void> rescheduleAll(
     List<ReminderConfig> reminders, {
-    List<ScheduleReminder> scheduleReminders = const [],
-    int scheduleWeekdaysMask = 0,
+    List<ScheduledReminderOccurrence> scheduleOccurrences = const [],
   }) {
     final reminderSnapshot = List<ReminderConfig>.unmodifiable(reminders);
-    final scheduleSnapshot = List<ScheduleReminder>.unmodifiable(
-      scheduleReminders,
+    final occurrenceSnapshot = List<ScheduledReminderOccurrence>.unmodifiable(
+      scheduleOccurrences,
     );
     final operation = _rescheduleQueue.then<void>(
       (_) => _applyReschedule(
         reminderSnapshot,
-        scheduleReminders: scheduleSnapshot,
-        scheduleWeekdaysMask: scheduleWeekdaysMask,
+        scheduleOccurrences: occurrenceSnapshot,
       ),
     );
     _rescheduleQueue = operation.catchError((Object _) {});
@@ -150,12 +151,11 @@ final class LocalNotificationService {
 
   Future<void> _applyReschedule(
     List<ReminderConfig> reminders, {
-    required List<ScheduleReminder> scheduleReminders,
-    required int scheduleWeekdaysMask,
+    required List<ScheduledReminderOccurrence> scheduleOccurrences,
   }) async {
     await initialize();
     final enabled = reminders.where((item) => item.enabled).toList();
-    if (enabled.isNotEmpty || scheduleReminders.isNotEmpty) {
+    if (enabled.isNotEmpty || scheduleOccurrences.isNotEmpty) {
       await _requireTimezone();
     }
     final desiredIds = <int>{};
@@ -165,14 +165,10 @@ final class LocalNotificationService {
       );
       await schedule(reminder);
     }
-    for (final reminder in scheduleReminders) {
-      desiredIds.addAll(
-        _weeklyIds(
-          idBase: _scheduleBase + reminder.slot * 10,
-          mask: scheduleWeekdaysMask,
-        ),
-      );
-      await _scheduleFromWorkday(reminder, scheduleWeekdaysMask);
+    for (final (index, occurrence) in scheduleOccurrences.indexed) {
+      final id = _scheduleBase + index;
+      desiredIds.add(id);
+      await _scheduleOccurrence(id, occurrence);
     }
     await _cancelRecurringExcept(desiredIds);
   }
@@ -208,17 +204,27 @@ final class LocalNotificationService {
     );
   }
 
-  Future<void> _scheduleFromWorkday(
-    ScheduleReminder reminder,
-    int weekdaysMask,
+  /// Um aviso da jornada num dia concreto. Pontual, para que feriados possam
+  /// ficar de fora da janela sem depender de cancelar uma recorrência inteira.
+  Future<void> _scheduleOccurrence(
+    int id,
+    ScheduledReminderOccurrence occurrence,
   ) async {
-    await _requireTimezone();
-    await _scheduleWeekly(
-      idBase: _scheduleBase + reminder.slot * 10,
-      mask: weekdaysMask,
-      hour: reminder.hour,
-      minute: reminder.minute,
-      body: reminder.message,
+    final at = occurrence.at;
+    await _plugin.zonedSchedule(
+      id: id,
+      title: 'OktaPonto',
+      body: occurrence.reminder.message,
+      scheduledDate: tz.TZDateTime(
+        tz.local,
+        at.year,
+        at.month,
+        at.day,
+        at.hour,
+        at.minute,
+      ),
+      notificationDetails: _details,
+      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
     );
   }
 

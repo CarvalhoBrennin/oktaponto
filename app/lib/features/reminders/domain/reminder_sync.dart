@@ -4,22 +4,23 @@ import '../../schedule/domain/work_schedule.dart';
 import '../data/local_notification_service.dart';
 import 'reminder.dart';
 
-/// Reagenda tudo que é recorrente: a lista manual e os avisos da jornada.
+/// Reagenda os avisos da lista manual e os da jornada para os próximos dias.
 ///
 /// Existe um único ponto de entrada porque os dois conjuntos compartilham o
-/// agendador do sistema; recalcular só metade apagaria a outra.
+/// agendador do sistema; recalcular só metade apagaria a outra. [now] define
+/// a janela e descarta horários que já passaram.
 Future<void> syncRecurringReminders({
   required LocalNotificationService notifications,
   required List<ReminderConfig> manualReminders,
   required WorkSchedule? schedule,
+  required DateTime now,
 }) async {
-  final planned = schedule == null
-      ? const <ScheduleReminder>[]
-      : plannedReminders(schedule);
+  final occurrences = schedule == null
+      ? const <ScheduledReminderOccurrence>[]
+      : upcomingScheduleReminders(schedule: schedule, now: now);
   await notifications.rescheduleAll(
     manualReminders,
-    scheduleReminders: planned,
-    scheduleWeekdaysMask: schedule?.weekdaysMask ?? 0,
+    scheduleOccurrences: occurrences,
   );
 }
 

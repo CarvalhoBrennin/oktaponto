@@ -22,6 +22,7 @@ Future<void> refreshRecurringReminders(
       notifications: ref.read(notificationServiceProvider),
       manualReminders: manual,
       schedule: setup.schedule,
+      now: ref.read(clockProvider).now(),
     );
   } catch (error, stackTrace) {
     logReminderFailure(error, stackTrace);
