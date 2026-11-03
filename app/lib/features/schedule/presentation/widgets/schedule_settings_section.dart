@@ -100,8 +100,9 @@ class ScheduleSettingsSection extends ConsumerWidget {
             ? 'A jornada foi salva, mas os lembretes não foram atualizados. '
                   '${friendlyError(error)}'
             : friendlyError(error);
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(message)));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(message)));
       }
     }
   }

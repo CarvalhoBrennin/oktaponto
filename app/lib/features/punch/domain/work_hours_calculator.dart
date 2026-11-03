@@ -81,7 +81,8 @@ final class DefaultWorkHoursCalculator implements WorkHoursCalculator {
     final targetMinutes = schedule?.isValid == true
         ? (schedule!.includesWeekday(date.weekday) ? schedule.targetMinutes : 0)
         : null;
-    final balanceMinutes = status == WorkDayStatus.complete &&
+    final balanceMinutes =
+        status == WorkDayStatus.complete &&
             !issues.any((issue) => issue.blocking) &&
             targetMinutes != null
         ? workedMinutes - targetMinutes

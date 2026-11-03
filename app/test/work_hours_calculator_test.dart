@@ -3,31 +3,27 @@ import 'package:oktaponto/features/punch/domain/models.dart';
 import 'package:oktaponto/features/punch/domain/work_hours_calculator.dart';
 import 'package:oktaponto/features/schedule/domain/work_schedule.dart';
 
-Punch p(int id, int hour, int minute, PunchKind kind) => _pAt(
-  DateTime(2026, 9, 1),
-  id,
-  hour,
-  minute,
-  kind,
-);
+Punch p(int id, int hour, int minute, PunchKind kind) =>
+    _pAt(DateTime(2026, 9, 1), id, hour, minute, kind);
 
-Punch _pAt(
-  DateTime date,
-  int id,
-  int hour,
-  int minute,
-  PunchKind kind,
-) => Punch(
-  id: id,
-  occurredAtUtc: DateTime.utc(date.year, date.month, date.day, hour, minute),
-  localDate:
-      '${date.year.toString().padLeft(4, '0')}-'
-      '${date.month.toString().padLeft(2, '0')}-'
-      '${date.day.toString().padLeft(2, '0')}',
-  utcOffsetMinutes: 0,
-  kind: kind,
-  isEdited: false,
-);
+Punch _pAt(DateTime date, int id, int hour, int minute, PunchKind kind) =>
+    Punch(
+      id: id,
+      occurredAtUtc: DateTime.utc(
+        date.year,
+        date.month,
+        date.day,
+        hour,
+        minute,
+      ),
+      localDate:
+          '${date.year.toString().padLeft(4, '0')}-'
+          '${date.month.toString().padLeft(2, '0')}-'
+          '${date.day.toString().padLeft(2, '0')}',
+      utcOffsetMinutes: 0,
+      kind: kind,
+      isEdited: false,
+    );
 
 void main() {
   const calculator = DefaultWorkHoursCalculator();
@@ -232,10 +228,7 @@ void main() {
     test('does not derive a bank movement for an incomplete day', () {
       final summary = calculator.calculate(
         DateTime(2026, 9, 1),
-        [
-          p(1, 8, 0, PunchKind.in_),
-          p(2, 12, 0, PunchKind.out),
-        ],
+        [p(1, 8, 0, PunchKind.in_), p(2, 12, 0, PunchKind.out)],
         metadata,
         schedule: schedule,
       );
@@ -285,23 +278,26 @@ void main() {
       expect(summary.isEligibleForBankHours, isFalse);
     });
 
-    test('counts a complete day outside the configured weekdays as overtime', () {
-      final summary = calculator.calculate(
-        DateTime(2026, 9, 5),
-        [
-          _pAt(DateTime(2026, 9, 5), 1, 8, 0, PunchKind.in_),
-          _pAt(DateTime(2026, 9, 5), 2, 12, 0, PunchKind.out),
-          _pAt(DateTime(2026, 9, 5), 3, 13, 0, PunchKind.in_),
-          _pAt(DateTime(2026, 9, 5), 4, 17, 0, PunchKind.out),
-        ],
-        const WorkDayMetadata(localDate: '2026-09-05'),
-        schedule: schedule,
-      );
+    test(
+      'counts a complete day outside the configured weekdays as overtime',
+      () {
+        final summary = calculator.calculate(
+          DateTime(2026, 9, 5),
+          [
+            _pAt(DateTime(2026, 9, 5), 1, 8, 0, PunchKind.in_),
+            _pAt(DateTime(2026, 9, 5), 2, 12, 0, PunchKind.out),
+            _pAt(DateTime(2026, 9, 5), 3, 13, 0, PunchKind.in_),
+            _pAt(DateTime(2026, 9, 5), 4, 17, 0, PunchKind.out),
+          ],
+          const WorkDayMetadata(localDate: '2026-09-05'),
+          schedule: schedule,
+        );
 
-      expect(summary.targetMinutes, 0);
-      expect(summary.overtimeMinutes, 480);
-      expect(summary.isEligibleForBankHours, isTrue);
-    });
+        expect(summary.targetMinutes, 0);
+        expect(summary.overtimeMinutes, 480);
+        expect(summary.isEligibleForBankHours, isTrue);
+      },
+    );
 
     test('month summary exposes overtime and net bank balance', () {
       final extra = calculator.calculate(
@@ -326,11 +322,7 @@ void main() {
         const WorkDayMetadata(localDate: '2026-09-02'),
         schedule: schedule,
       );
-      final month = MonthSummary(
-        year: 2026,
-        month: 9,
-        days: [deficit, extra],
-      );
+      final month = MonthSummary(year: 2026, month: 9, days: [deficit, extra]);
 
       expect(month.overtimeMinutes, 60);
       expect(month.bankBalanceMinutes, 0);
