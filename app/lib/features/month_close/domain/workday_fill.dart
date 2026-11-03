@@ -1,3 +1,4 @@
+import '../../../core/time/national_holidays.dart';
 import '../../../core/time/time_utils.dart';
 import '../../punch/domain/models.dart';
 import '../../schedule/domain/work_schedule.dart';
@@ -111,8 +112,8 @@ final class WorkdayFillPattern {
 }
 
 /// Retorna dias de trabalho anteriores a hoje, sem batidas e ainda incluídos
-/// no timesheet. Dias futuros, hoje, fins de semana fora da escala e datas
-/// excluídas manualmente não recebem registros.
+/// no timesheet. Dias futuros, hoje, fins de semana fora da escala, feriados
+/// nacionais e datas excluídas manualmente não recebem registros.
 List<DateTime> missingScheduledWorkdays({
   required MonthSummary month,
   required WorkSchedule? schedule,
@@ -137,6 +138,7 @@ List<DateTime> missingScheduledWorkdays({
     final date = DateTime(month.year, month.month, dayNumber);
     if (!date.isBefore(today)) break;
     if (!effectiveSchedule.includesWeekday(date.weekday)) continue;
+    if (nationalHolidayOn(date) != null) continue;
     final key = localDateKey(date);
     if (hasPunches.contains(key) || excludedDates.contains(key)) continue;
     missing.add(date);

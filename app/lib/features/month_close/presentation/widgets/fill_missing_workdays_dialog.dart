@@ -79,7 +79,8 @@ class _FillMissingWorkdaysDialogState extends State<FillMissingWorkdaysDialog> {
             children: [
               const Text(
                 'Serão adicionadas quatro batidas em cada dia útil vazio '
-                'anterior a hoje. Dias com registros não serão alterados.',
+                'anterior a hoje, sem contar feriados nacionais. Dias com '
+                'registros não serão alterados.',
               ),
               const SizedBox(height: HfSpace.md),
               _FillTimeRow(

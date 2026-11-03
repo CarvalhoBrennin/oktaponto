@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/design/hf_semantics.dart';
 import '../../../core/design/hf_tokens.dart';
+import '../../../core/time/national_holidays.dart';
 import '../../../core/time/time_utils.dart';
 import '../../../core/ui/hf_errors.dart';
 import '../../../core/ui/hf_notice.dart';
@@ -226,9 +227,12 @@ class _WorkDaySheetState extends ConsumerState<_WorkDaySheet> {
     final theme = Theme.of(context);
     final date = widget.date;
     final summary = ref.watch(daySummaryProvider(date));
+    final holiday = nationalHolidayOn(date);
 
     return HfSheetScaffold(
-      subtitle: weekdayPt(date),
+      subtitle: holiday == null
+          ? weekdayPt(date)
+          : '${weekdayPt(date)} · ${holiday.name}',
       title: dayAndMonthPt(date),
       footer: Row(
         children: [

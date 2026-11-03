@@ -360,10 +360,10 @@ class _MonthCloseBody extends StatelessWidget {
                   const HfNotice(
                     tone: HfNoticeTone.info,
                     message:
-                        'O preenchimento usa quatro horários por dia. Dias '
-                        'com alguma batida ou excluídos do timesheet ficam '
-                        'como estão; os novos horários podem ser editados '
-                        'depois no Histórico.',
+                        'O preenchimento usa quatro horários por dia. '
+                        'Feriados, dias com batidas e dias excluídos ficam '
+                        'como estão; os horários podem ser editados depois '
+                        'no Histórico.',
                   ),
                   if (error != null && !hasAnyRecord) ...[
                     const SizedBox(height: HfSpace.md),

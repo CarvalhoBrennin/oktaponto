@@ -57,12 +57,25 @@ void main() {
       now: DateTime(2026, 9, 10, 18),
     );
 
+    // 7 de setembro é feriado nacional e também fica de fora.
     expect(missing, [
       DateTime(2026, 9, 4),
-      DateTime(2026, 9, 7),
       DateTime(2026, 9, 8),
       DateTime(2026, 9, 9),
     ]);
+  });
+
+  test('skips national holidays that fall on scheduled weekdays', () {
+    final missing = missingScheduledWorkdays(
+      month: MonthSummary(year: 2026, month: 4, days: const []),
+      schedule: WorkSchedule.defaults,
+      now: DateTime(2026, 4, 22, 18),
+    );
+
+    // 3 de abril é Sexta-feira Santa e 21 de abril é Tiradentes.
+    expect(missing, contains(DateTime(2026, 4, 2)));
+    expect(missing, isNot(contains(DateTime(2026, 4, 3))));
+    expect(missing, isNot(contains(DateTime(2026, 4, 21))));
   });
 
   test('rejects a pattern that would place the final punch on another day', () {

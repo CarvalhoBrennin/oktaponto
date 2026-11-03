@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/design/hf_semantics.dart';
 import '../../../../core/design/hf_tokens.dart';
+import '../../../../core/time/national_holidays.dart';
 import '../../../../core/time/time_utils.dart';
 import '../../../punch/domain/models.dart';
 import '../../../punch/presentation/workday_visuals.dart';
@@ -22,13 +23,15 @@ class DayHistoryRow extends StatelessWidget {
     final hf = context.hf;
     final visual = visualForDay(hf, day);
     final excluded = !day.includeInTimesheet;
+    final holiday = nationalHolidayOn(day.date);
 
     return Semantics(
       button: true,
       label:
           '${day.date.day} de ${weekdayPt(day.date)}, ${visual.label}, '
           '${minutesToCompactHm(day.workedMinutes)}'
-          '${excluded ? ', fora do timesheet' : ''}',
+          '${excluded ? ', fora do timesheet' : ''}'
+          '${holiday == null ? '' : ', feriado ${holiday.name}'}',
       child: ExcludeSemantics(
         child: InkWell(
           onTap: onTap,
@@ -77,6 +80,16 @@ class DayHistoryRow extends StatelessWidget {
                         Flexible(
                           child: Text(
                             '· fora do timesheet',
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.bodySmall,
+                          ),
+                        ),
+                      ],
+                      if (holiday != null) ...[
+                        const SizedBox(width: HfSpace.sm),
+                        Flexible(
+                          child: Text(
+                            '· ${holiday.name}',
                             overflow: TextOverflow.ellipsis,
                             style: theme.textTheme.bodySmall,
                           ),

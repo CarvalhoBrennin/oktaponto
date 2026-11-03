@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/design/hf_semantics.dart';
 import '../../../../core/design/hf_tokens.dart';
+import '../../../../core/time/national_holidays.dart';
 import '../../../../core/time/time_utils.dart';
 import '../../../punch/domain/models.dart';
 import '../../../punch/presentation/workday_visuals.dart';
@@ -10,7 +11,8 @@ import '../../../punch/presentation/workday_visuals.dart';
 ///
 /// Cada célula é um dia: o número em si carrega o estado, e uma marca abaixo
 /// dele repete a informação em forma — traço para completo, meio-círculo para
-/// incompleto, alerta para revisar. Estado nunca depende só de cor.
+/// incompleto, alerta para revisar. Um dia sem registro que é feriado nacional
+/// mostra a bandeira no lugar da marca. Estado nunca depende só de cor.
 class MonthCalendar extends StatelessWidget {
   const MonthCalendar({
     super.key,
@@ -40,6 +42,10 @@ class MonthCalendar extends StatelessWidget {
       1.0,
       1.8,
     );
+    final holidays = <int, NationalHoliday>{
+      for (final holiday in nationalHolidaysOf(month.year))
+        if (holiday.date.month == month.month) holiday.date.day: holiday,
+    };
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -72,6 +78,7 @@ class MonthCalendar extends StatelessWidget {
                       return _CalendarCell(
                         date: date,
                         day: days[dayNumber],
+                        holiday: holidays[dayNumber],
                         isToday: dateOnly(today) == date,
                         onTap: () => onSelect(date),
                       );
@@ -80,6 +87,20 @@ class MonthCalendar extends StatelessWidget {
                 ),
             ],
           ),
+        if (holidays.isNotEmpty) ...[
+          const SizedBox(height: HfSpace.sm),
+          Row(
+            children: [
+              Icon(
+                Icons.flag_outlined,
+                size: 12,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+              const SizedBox(width: HfSpace.xs),
+              Text('Feriado nacional', style: theme.textTheme.labelSmall),
+            ],
+          ),
+        ],
       ],
     );
   }
@@ -89,12 +110,14 @@ class _CalendarCell extends StatelessWidget {
   const _CalendarCell({
     required this.date,
     required this.day,
+    required this.holiday,
     required this.isToday,
     required this.onTap,
   });
 
   final DateTime date;
   final WorkDaySummary? day;
+  final NationalHoliday? holiday;
   final bool isToday;
   final VoidCallback onTap;
 
@@ -105,6 +128,7 @@ class _CalendarCell extends StatelessWidget {
     final summary = day;
     final hasRecords = summary != null && summary.punches.isNotEmpty;
     final visual = hasRecords ? visualForDay(hf, summary) : null;
+    final holidayName = holiday?.name;
 
     // A célula acompanha o tamanho de fonte do sistema: com a escala grande,
     // o círculo cresce junto em vez de deixar o número vazar por fora dele.
@@ -118,7 +142,10 @@ class _CalendarCell extends StatelessWidget {
       label: hasRecords
           ? '${dayAndMonthPt(date)}, ${visual!.label}, '
                 '${minutesToCompactHm(summary.workedMinutes)}'
-          : '${dayAndMonthPt(date)}, sem registro',
+                '${holidayName == null ? '' : ', feriado $holidayName'}'
+          : holidayName == null
+          ? '${dayAndMonthPt(date)}, sem registro'
+          : '${dayAndMonthPt(date)}, feriado $holidayName',
       child: ExcludeSemantics(
         child: InkWell(
           onTap: onTap,
@@ -169,7 +196,13 @@ class _CalendarCell extends StatelessWidget {
                           size: 9,
                           color: visual.role.foreground,
                         )
-                      : null,
+                      : holidayName == null
+                      ? null
+                      : Icon(
+                          Icons.flag_outlined,
+                          size: 9,
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
                 ),
               ],
             ),
