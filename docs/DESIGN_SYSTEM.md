@@ -108,15 +108,21 @@ intervalo, e o resultado vira uma `WorkSchedule`
 1. **A meta do dia**, consumida pelo `TimeHero` via `describeWorkday(...,
    targetMinutes:)`. Continua sendo derivação para exibição — os totais
    autoritativos não mudam.
-2. **Os lembretes automáticos.** `plannedReminders()` gera os avisos
-   recorrentes; com intervalo livre, o fim do intervalo não tem hora marcada e
-   é `planBreakReminder()` que arma um aviso pontual a partir da batida real,
-   com uma única insistência 15 min depois.
+2. **Os lembretes automáticos.** `plannedReminders()` define o horário de cada
+   aviso da jornada; `upcomingScheduleReminders()` os espalha pelos próximos 14
+   dias, pulando fins de semana fora da escala e feriados nacionais. Cada aviso
+   é pontual, não recorrente, por isso feriados ficam de fora sem depender de
+   cancelar uma série inteira. Com intervalo livre, o fim do intervalo não tem
+   hora marcada e é `planBreakReminder()` que arma um aviso pontual a partir da
+   batida real, com uma única insistência 15 min depois.
 
 Os avisos da jornada e a lista manual de lembretes passam pelo mesmo agendador
 (`syncRecurringReminders`), porque cada um chamando `cancelAll` por conta
-própria apagaria os do outro. O aviso de fim de intervalo vive numa faixa de
-identificadores separada, que o reagendamento recorrente não toca.
+própria apagaria os do outro. A janela de 14 dias anda com o tempo, então a
+reconciliação roda na abertura do app, ao mudar a jornada ou a lista e ao
+voltar para o primeiro plano. Os lembretes da lista manual continuam semanais.
+O aviso de fim de intervalo vive numa faixa de identificadores separada, que o
+reagendamento não toca.
 
 ### Por que a jornada não está no SQLite
 
